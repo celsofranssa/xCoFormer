@@ -23,7 +23,7 @@ class CodeDescDataModule(pl.LightningDataModule):
         # Assign train/val datasets for use in dataloaders
         if stage == 'fit' or stage is None:
             self.train_dataset = CodeSearchDataset(
-                path=self.hparams.train_path,
+                path=self.hparams.train.path,
                 x1_tokenizer=self.x1_tokenizer,
                 x2_tokenizer=self.x2_tokenizer,
                 x1_length=self.hparams.x1_length,
@@ -31,7 +31,7 @@ class CodeDescDataModule(pl.LightningDataModule):
             )
 
             self.val_dataset = CodeSearchDataset(
-                path=self.hparams.val_path,
+                path=self.hparams.val.path,
                 x1_tokenizer=self.x1_tokenizer,
                 x2_tokenizer=self.x2_tokenizer,
                 x1_length=self.hparams.x1_length,
@@ -40,7 +40,7 @@ class CodeDescDataModule(pl.LightningDataModule):
 
         if stage == 'test' or stage is None:
             self.test_dataset = CodeSearchDataset(
-                path=self.hparams.test_path,
+                path=self.hparams.val.path,
                 x1_tokenizer=self.x1_tokenizer,
                 x2_tokenizer=self.x2_tokenizer,
                 x1_length=self.hparams.x1_length,

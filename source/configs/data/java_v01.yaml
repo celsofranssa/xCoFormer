@@ -1,15 +1,17 @@
 # @package _group_
+
 name: "java_v01"
-train_path: "../resources/datasets/java_v01/train.jsonl"
-test_path: "../resources/datasets/java_v01/test.jsonl"
-val_path: "../resources/datasets/java_v01/val.jsonl"
+
 train:
+  path: "../resources/datasets/java_v01/train.jsonl"
   num_samples: 1257391
 
 test:
+  path: "../resources/datasets/java_v01/test.jsonl"
   num_samples: 71892
 
 val:
+  path: "../resources/datasets/java_v01/val.jsonl"
   num_samples: 73805
 
 batch_size: 16

@@ -4,10 +4,10 @@
 
 ```shell script
 # clone the project 
-git clone git@github.com:Ceceu/xCoFormer.git
+git clone git@github.com:Ceceu/xCoFormerr.git
 
 # change directory to project folder
-cd xCoFormer/
+cd xCoFormerr/
 
 # Create a new virtual environment by choosing a Python interpreter 
 # and making a ./venv directory to hold it:
@@ -25,4 +25,8 @@ deactivate
 
 ### 2. Datasets
 
+
 ### 3. Test Run
+```
+python xCoFormer.py model=rnn data=java_v01 data.batch_size=128 trainer.max_epochs=1
+```

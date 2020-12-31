@@ -1,5 +1,5 @@
 defaults:
-  - model: cnn
+  - model: bert
   - data: java_v01
 
 log:

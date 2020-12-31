@@ -1,6 +1,9 @@
 # @package _group_
+
 name: "cnn"
+
 x1_encoder: "source.encoder.CNNEncoder.CNNEncoder"
+
 x1_encoder_hparams:
   vocabulary_size: 50000
   representation_size: 768
@@ -9,6 +12,7 @@ x1_encoder_hparams:
   sentence_length: 16
 
 x2_encoder: "source.encoder.CNNEncoder.CNNEncoder"
+
 x2_encoder_hparams:
   vocabulary_size: 50000
   representation_size: 768
@@ -18,5 +22,8 @@ x2_encoder_hparams:
 
 lr: 1e-7
 
+tokenizer:
+  architecture: "bert-base-uncased"
+
 predictions:
-  path: "/home/celso/projects/semantic_code_search/resources/predictions/cnn_predictions.pt"
+  path: "../resources/predictions/cnn_predictions.pt"

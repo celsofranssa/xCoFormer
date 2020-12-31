@@ -1,16 +1,17 @@
 # @package _group_
+
 name: "python_v01"
-train_path: "../resources/datasets/python_v01/train.jsonl"
-test_path: "../resources/datasets/python_v01/test.jsonl"
-val_path: "../resources/datasets/python_v01/val.jsonl"
 
 train:
+  path: "../resources/datasets/python_v01/train.jsonl"
   num_samples: 75614
 
 test:
+  path: "../resources/datasets/python_v01/test.jsonl"
   num_samples: 1411
 
 val:
+  path: "../resources/datasets/python_v01/val.jsonl"
   num_samples: 1364
 
 batch_size: 16
