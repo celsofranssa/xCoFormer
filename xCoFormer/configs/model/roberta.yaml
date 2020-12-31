@@ -1,0 +1,18 @@
+# @package _group_
+name: "roberta"
+
+x1_encoder: "source.encoder.RoBERTaEncoder.RoBERTaEncoder"
+x1_encoder_hparams:
+  architecture: "roberta-base"
+
+x2_encoder: "source.encoder.RoBERTaEncoder.RoBERTaEncoder"
+x2_encoder_hparams:
+  architecture: "roberta-base"
+
+tokenizer:
+  architecture: "roberta-base"
+
+lr: 1e-7
+
+predictions:
+  path: "/home/celso/projects/semantic_code_search/resources/predictions/roberta_predictions.pt"

@@ -1,0 +1,14 @@
+# @package _group_
+name: "bert"
+x1_encoder: "source.encoder.BertEncoder.BertEncoder"
+x1_encoder_hparams:
+  architecture: "bert-base-uncased"
+
+x2_encoder: "source.encoder.BertEncoder.BertEncoder"
+x2_encoder_hparams:
+  architecture: "bert-base-uncased"
+
+lr: 1e-7
+
+predictions:
+  path: "/home/celso/projects/semantic_code_search/resources/predictions/bert_predictions.pt"

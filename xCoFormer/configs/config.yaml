@@ -1,0 +1,18 @@
+defaults:
+  - model: cnn
+  - data: java_v01
+
+log:
+  dir: "../resources/logs/"
+
+model_checkpoint:
+  dir: "../resources/model_checkpoints/"
+
+tasks: [ "fit" ]
+
+stats:
+  dir: "../resources/stats/"
+
+trainer:
+  max_epochs: 16
+  fast_dev_run: False
