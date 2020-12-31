@@ -4,7 +4,7 @@
 
 ```shell script
 # clone the project 
-git clone git@github.com:Ceceu/xCoFormerr.git
+git clone git@github.com:celsofranssa/xCoFormer.git
 
 # change directory to project folder
 cd xCoFormerr/
