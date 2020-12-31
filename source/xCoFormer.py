@@ -61,7 +61,7 @@ def test(trainer, model, datamodule):
 
 def fit(hparams):
     print(OmegaConf.to_yaml(hparams))
-    # logger
+    #logger
     tb_logger = get_logger(hparams)
 
     # checkpoint callback
@@ -95,39 +95,6 @@ def fit(hparams):
     # testing
     dm.setup('test')
     trainer.test(datamodule=dm)
-
-
-# def eval(hparams):
-#     print(OmegaConf.to_yaml(hparams))
-#     predictions = torch.load(hparams.model.predictions)
-#
-#     #
-#     descs = []
-#     codes = []
-#
-#     for prediction in predictions:
-#         descs.append(prediction["r1"])
-#         codes.append(prediction["r2"])
-#
-#     # initialize a new index, using a HNSW index on Cosine Similarity
-#     index = nmslib.init(method='hnsw', space='cosinesimil')
-#     index.addDataPointBatch(codes)
-#     index.createIndex()
-#
-#     neighbours = index.knnQueryBatch(descs, k=100, num_threads=64)
-#
-#     r_rank = []
-#     index_error = 0
-#     for qid, neighbour in enumerate(neighbours):
-#         rids, distances = neighbour
-#         try:
-#             p = np.where(rids == qid)[0][0]
-#             r_rank.append(1.0 / (p + 1))
-#         except IndexError:
-#             index_error += 1
-#
-#     print(index_error)
-#     print(mean(r_rank))
 
 
 def rank(predictions_path):
@@ -216,8 +183,10 @@ def eval(hparams):
 
 
 @hydra.main(config_path="configs/", config_name="config.yaml")
-def my_app(hparams):
+def start(hparams):
     os.chdir(hydra.utils.get_original_cwd())
+
+    print(os.getcwd())
     if "fit" in hparams.tasks:
         fit(hparams)
     if "predict" in hparams.tasks:
@@ -227,4 +196,4 @@ def my_app(hparams):
 
 
 if __name__ == '__main__':
-    my_app()
+    start()

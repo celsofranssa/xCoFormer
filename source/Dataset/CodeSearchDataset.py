@@ -19,6 +19,7 @@ class CodeSearchDataset(Dataset):
         self._init_dataset(path)
 
     def _init_dataset(self, dataset_path):
+
         with open(dataset_path, "r") as dataset_file:
             for idx, line in enumerate(dataset_file):
                 sample = json.loads(line)

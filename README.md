@@ -24,7 +24,21 @@ deactivate
 ```
 
 ### 2. Datasets
+After downloading the datasets from [Kaggle Datasets](https://www.kaggle.com/aldebbaran/code-search-datasets ), it should be placed inside the resources / datasets / folder as shown below:
 
+```
+xCoFormer/
+|-- resources
+|   |-- datasets
+|   |   |-- java_v01
+|   |   |   |-- test.jsonl
+|   |   |   |-- train.jsonl
+|   |   |   `-- val.jsonl
+|   |   `-- python_v01
+|   |       |-- test.jsonl
+|   |       |-- train.jsonl
+|   |       `-- val.jsonl
+```
 
 ### 3. Test Run
 ```
