@@ -61,7 +61,7 @@ def test(trainer, model, datamodule):
 
 def fit(hparams):
     print(OmegaConf.to_yaml(hparams))
-    #logger
+    # logger
     tb_logger = get_logger(hparams)
 
     # checkpoint callback
@@ -77,8 +77,6 @@ def fit(hparams):
     dm = CodeDescDataModule(hparams.data, x1_tokenizer, x2_tokenizer)
 
     model = JointEncoder(hparams.model)
-
-    print(OmegaConf.to_yaml(hparams))
 
     trainer = Trainer(
         fast_dev_run=hparams.trainer.fast_dev_run,
@@ -186,7 +184,6 @@ def eval(hparams):
 def start(hparams):
     os.chdir(hydra.utils.get_original_cwd())
 
-    print(os.getcwd())
     if "fit" in hparams.tasks:
         fit(hparams)
     if "predict" in hparams.tasks:

@@ -7,7 +7,7 @@
 git clone git@github.com:celsofranssa/xCoFormer.git
 
 # change directory to project folder
-cd xCoFormerr/
+cd xCoFormer/
 
 # Create a new virtual environment by choosing a Python interpreter 
 # and making a ./venv directory to hold it:
@@ -75,3 +75,5 @@ DATALOADER:0 TEST RESULTS
  'val_mrr': tensor(0.0410)}
 --------------------------------------------------------------------------------
 ```
+
+Is there
