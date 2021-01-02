@@ -130,3 +130,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Virtual env
+virtualenv/
+
+# Dataset
+resources/datasets/
+resources/outputs/
+resources/logs/
+source/outputs/

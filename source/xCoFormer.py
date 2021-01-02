@@ -15,7 +15,6 @@ from transformers import AutoTokenizer
 from source.DataModule.CodeDescDataModule import CodeDescDataModule
 from source.model.JointEncoder import JointEncoder
 
-
 def get_logger(hparams):
     return pl_loggers.TensorBoardLogger(
         save_dir=hparams.log.dir,
