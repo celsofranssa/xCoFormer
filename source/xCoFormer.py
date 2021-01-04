@@ -52,7 +52,7 @@ def get_tokenizer(hparams):
 
 def fit(hparams):
     print(OmegaConf.to_yaml(hparams, resolve=True))
-    #logger
+    # logger
     tb_logger = get_logger(hparams)
 
     # checkpoint callback
@@ -134,6 +134,7 @@ def explain(hparams):
     torch.save(obj=attentions,
                f=hparams.attentions.dir +
                  hparams.model.name +
+                 "_" +
                  hparams.data.name +
                  ".pt")
 
