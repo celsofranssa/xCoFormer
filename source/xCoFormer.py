@@ -51,40 +51,39 @@ def get_tokenizer(hparams):
 
 
 def fit(hparams):
-    # print(OmegaConf.to_yaml(hparams, resolve=True))
-    print(hparams)
-    # logger
-    # tb_logger = get_logger(hparams)
-    #
-    # # checkpoint callback
-    # checkpoint_callback = get_model_checkpoint_callback(hparams)
-    #
-    # # early stopping callback
-    # early_stopping_callback = get_early_stopping_callback(hparams.trainer)
-    #
-    # # tokenizers
-    # x1_tokenizer = get_tokenizer(hparams.model)
-    # x2_tokenizer = x1_tokenizer
-    #
-    # dm = CodeDescDataModule(hparams.data, x1_tokenizer, x2_tokenizer)
-    #
-    # model = JointEncoder(hparams.model)
-    #
-    # trainer = Trainer(
-    #     fast_dev_run=hparams.trainer.fast_dev_run,
-    #     max_epochs=hparams.trainer.max_epochs,
-    #     gpus=1,
-    #     logger=tb_logger,
-    #     callbacks=[checkpoint_callback, early_stopping_callback]
-    # )
-    #
-    # # training
-    # dm.setup('fit')
-    # trainer.fit(model, datamodule=dm)
-    #
-    # # testing
-    # dm.setup('test')
-    # trainer.test(datamodule=dm)
+    print(OmegaConf.to_yaml(hparams, resolve=True))
+    #logger
+    tb_logger = get_logger(hparams)
+
+    # checkpoint callback
+    checkpoint_callback = get_model_checkpoint_callback(hparams)
+
+    # early stopping callback
+    early_stopping_callback = get_early_stopping_callback(hparams.trainer)
+
+    # tokenizers
+    x1_tokenizer = get_tokenizer(hparams.model)
+    x2_tokenizer = x1_tokenizer
+
+    dm = CodeDescDataModule(hparams.data, x1_tokenizer, x2_tokenizer)
+
+    model = JointEncoder(hparams.model)
+
+    trainer = Trainer(
+        fast_dev_run=hparams.trainer.fast_dev_run,
+        max_epochs=hparams.trainer.max_epochs,
+        gpus=1,
+        logger=tb_logger,
+        callbacks=[checkpoint_callback, early_stopping_callback]
+    )
+
+    # training
+    dm.setup('fit')
+    trainer.fit(model, datamodule=dm)
+
+    # testing
+    dm.setup('test')
+    trainer.test(datamodule=dm)
 
 
 def predict(hparams):
