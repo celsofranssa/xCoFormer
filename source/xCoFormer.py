@@ -23,12 +23,13 @@ def get_logger(hparams):
     )
 
 
-def get_model_checkpoint(hparams):
+def get_model_checkpoint_callback(hparams):
     return ModelCheckpoint(
         monitor="val_mrr",
         dirpath=hparams.model_checkpoint.dir,
-        filename=hparams.model.name + "_" + hparams.data.name + "_{epoch:02d}_{val_mrr:.2f}",
+        filename=hparams.model.name + "_" + hparams.data.name,
         save_top_k=1,
+        save_weights_only=True,
         mode="max"
     )
 
@@ -36,7 +37,8 @@ def get_model_checkpoint(hparams):
 def get_early_stopping_callback(hparams):
     return EarlyStopping(
         monitor='val_mrr',
-        patience=3,
+        patience=hparams.patience,
+        min_delta=hparams.min_delta,
         mode='max'
     )
 
@@ -46,29 +48,16 @@ def get_tokenizer(hparams):
         hparams.tokenizer.architecture
     )
 
-
-def train(trainer, model, datamodule):
-    # training
-    datamodule.setup('fit')
-    trainer.fit(model, datamodule=datamodule)
-
-
-def test(trainer, model, datamodule):
-    # testing
-    datamodule.setup('test')
-    trainer.test(datamodule=datamodule)
-
-
 def fit(hparams):
     print(OmegaConf.to_yaml(hparams))
     # logger
     tb_logger = get_logger(hparams)
 
     # checkpoint callback
-    checkpoint_callback = get_model_checkpoint(hparams)
+    checkpoint_callback = get_model_checkpoint_callback(hparams)
 
     # early stopping callback
-    early_stopping_callback = get_early_stopping_callback(hparams)
+    early_stopping_callback = get_early_stopping_callback(hparams.trainer)
 
     # tokenizers
     x1_tokenizer = get_tokenizer(hparams.model)
@@ -181,16 +170,18 @@ def eval(hparams):
 
 
 @hydra.main(config_path="configs/", config_name="config.yaml")
-def start(hparams):
+def perform_tasks(hparams):
     os.chdir(hydra.utils.get_original_cwd())
 
     if "fit" in hparams.tasks:
         fit(hparams)
     if "predict" in hparams.tasks:
-        test(hparams)
+        print("Not implemented yet")
     if "eval" in hparams.tasks:
         eval(hparams)
+    if "explain" in hparams.tasks:
+        print("Not implemented yet")
 
 
 if __name__ == '__main__':
-    start()
+    perform_tasks()

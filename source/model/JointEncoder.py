@@ -1,6 +1,7 @@
 import importlib
 
 import torch
+from omegaconf import OmegaConf
 from pytorch_lightning.core.lightning import LightningModule
 
 from source.loss.MultipleNegativesRankingLoss import MultipleNegativesRankingLoss
@@ -8,7 +9,7 @@ from source.metric.MRRMetric import MRRMetric
 
 
 class JointEncoder(LightningModule):
-    """Encodes the code and docstring into an same space of embeddings."""
+    """Encodes the code and desc into an same space of embeddings."""
 
     def __init__(self, hparams):
         super(JointEncoder, self).__init__()

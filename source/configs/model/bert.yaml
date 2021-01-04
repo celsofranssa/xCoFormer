@@ -6,11 +6,13 @@ x1_encoder: "source.encoder.BertEncoder.BertEncoder"
 
 x1_encoder_hparams:
   architecture: "bert-base-uncased"
+  output_attentions: False
 
 x2_encoder: "source.encoder.BertEncoder.BertEncoder"
 
 x2_encoder_hparams:
   architecture: "bert-base-uncased"
+  output_attentions: False
 
 lr: 1e-7
 

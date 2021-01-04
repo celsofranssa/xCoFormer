@@ -1,0 +1,18 @@
+# @package _group_
+
+name: "bert"
+
+x1_encoder: "source.explainer.BertExplainer.BertExplainer"
+
+x1_encoder_hparams:
+  architecture: "bert-base-uncased"
+  output_attentions: True
+
+x2_encoder: "source.explainer.BertExplainer.BertExplainer"
+
+x2_encoder_hparams:
+  architecture: "bert-base-uncased"
+  output_attentions: True
+
+tokenizer:
+  architecture: "bert-base-uncased"

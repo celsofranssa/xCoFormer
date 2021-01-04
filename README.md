@@ -19,12 +19,15 @@ source ./venv/bin/activate
 # install dependecies
 pip install -r requirements.txt
 
+# setting python path
+export PYTHONPATH=$PATHONPATH:<path-to-project-dir>/xCoFormer/
+
 # (if you need) to exit virtualenv later:
 deactivate
 ```
 
 ### 2. Datasets
-After downloading the datasets from [Kaggle Datasets](https://www.kaggle.com/aldebbaran/code-search-datasets ), it should be placed inside the resources / datasets / folder as shown below:
+After downloading the datasets from [Kaggle Datasets](https://www.kaggle.com/aldebbaran/code-search-datasets ), it should be placed inside the `resources/datasets/` folder as shown below:
 
 ```
 xCoFormer/
