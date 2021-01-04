@@ -123,14 +123,20 @@ def explain(hparams):
     x1 = torch.tensor([x1])
     x2 = torch.tensor([x2])
 
-
     # predict
     model.eval()
 
-    x1_attentions, x2_attentions = model(x1, x2)
-    print(len(x1_attentions))
-    print(x1_attentions[0].shape)
-    return  x1_attentions, x2_attentions
+    r1_attentions, r2_attentions = model(x1, x2)
+
+    attentions = {
+        "r1_attentions": r1_attentions,
+        "r2_attentions": r2_attentions
+    }
+    torch.save(obj=attentions,
+               f=hparams.attentions.dir +
+                 hparams.model.name +
+                 hparams.data.name +
+                 ".pt")
 
 
 @hydra.main(config_path="configs/", config_name="config.yaml")

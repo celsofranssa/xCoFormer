@@ -13,6 +13,9 @@ tasks: [ "fit" ]
 stats:
   dir: "../resources/stats/"
 
+attentions:
+  dir: "../resources/attentions/"
+
 trainer:
   max_epochs: 16
   patience: 3
