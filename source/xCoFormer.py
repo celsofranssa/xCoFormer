@@ -52,7 +52,7 @@ def get_tokenizer(hparams):
 
 def fit(hparams):
     # print(OmegaConf.to_yaml(hparams, resolve=True))
-    print(hparams.model.predictions)
+    print(hparams)
     # logger
     # tb_logger = get_logger(hparams)
     #
@@ -86,6 +86,7 @@ def fit(hparams):
     # dm.setup('test')
     # trainer.test(datamodule=dm)
 
+
 def predict(hparams):
     print("Not implemented yet")
 
@@ -97,8 +98,39 @@ def eval(hparams):
 
 
 def explain(hparams):
-    print("Not implemented yet")
+    print("using the following parameters:\n", OmegaConf.to_yaml(hparams))
+    # override some of the params with new values
+    model = JointEncoder.load_from_checkpoint(
+        checkpoint_path=hparams.model_checkpoint.dir + hparams.model.name + "_" + hparams.data.name + ".ckpt",
+        **hparams.model
+    )
 
+    # tokenizers
+    x1_tokenizer = get_tokenizer(hparams.model)
+    x2_tokenizer = x1_tokenizer
+
+    code = "def init return true"
+    desc = "inits the app"
+
+    x1_length = hparams.data.x1_length
+    x1_length = hparams.data.x2_length
+
+    x1 = x1_tokenizer.encode(text=desc, max_length=x1_length, padding="max_length",
+                             truncation=True)
+    x2 = x2_tokenizer.encode(text=code, max_length=x1_length, padding="max_length",
+                             truncation=True)
+
+    x1 = torch.tensor([x1])
+    x2 = torch.tensor([x2])
+
+
+    # predict
+    model.eval()
+
+    x1_attentions, x2_attentions = model(x1, x2)
+    print(len(x1_attentions))
+    print(x1_attentions[0].shape)
+    return  x1_attentions, x2_attentions
 
 
 @hydra.main(config_path="configs/", config_name="config.yaml")
