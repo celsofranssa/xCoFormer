@@ -12,6 +12,7 @@ class JointEncoder(LightningModule):
     """Encodes the code and desc into an same space of embeddings."""
 
     def __init__(self, hparams):
+        print("model_params: ", hparams.predictions.path)
         super(JointEncoder, self).__init__()
         self.hparams = hparams
         self.x1_encoder = self.get_encoder(hparams.x1_encoder, hparams.x1_encoder_hparams)
