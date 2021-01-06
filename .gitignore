@@ -138,4 +138,6 @@ virtualenv/
 resources/datasets/
 resources/outputs/
 resources/logs/
+resources/model_checkpoints/
+resources/predictions/
 source/outputs/
