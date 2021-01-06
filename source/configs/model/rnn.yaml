@@ -22,4 +22,4 @@ tokenizer:
   architecture: "bert-base-uncased"
 
 predictions:
-  path: "../resources/predictions/rnn_${data.name}_predictions.pt"
+  path: "../resources/predictions/rnn_predictions.pt"

@@ -20,4 +20,4 @@ tokenizer:
   architecture: "bert-base-uncased"
 
 predictions:
-  path: "../resources/predictions/nbow_${data.name}_predictions.pt"
+  path: "../resources/predictions/nbow_predictions.pt"

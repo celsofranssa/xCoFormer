@@ -51,13 +51,8 @@ def get_tokenizer(hparams):
 
 
 def fit(hparams):
-    # OmegaConf.
-    # model = OmegaConf.masked_copy(hparams, ["model"])
-    # print(model)
+    print("Using the following params:\n", OmegaConf.to_yaml(hparams))
 
-
-    # hparams = OmegaConf.to_container(hparams, resolve=True)
-    print("cooo:", OmegaConf.masked_copy(hparams, ["model"]))
     # logger
     tb_logger = get_logger(hparams)
 
@@ -72,8 +67,6 @@ def fit(hparams):
     x2_tokenizer = x1_tokenizer
 
     dm = CodeDescDataModule(hparams.data, x1_tokenizer, x2_tokenizer)
-
-
 
     model = JointEncoder(hparams.model)
 
