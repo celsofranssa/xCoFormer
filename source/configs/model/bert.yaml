@@ -16,6 +16,10 @@ x2_encoder_hparams:
 
 lr: 1e-7
 
+loss: "source.loss.NPairsLoss.NPairsLoss"
+loss_hparams:
+  name: "NPairsLoss"
+
 tokenizer:
   architecture: "bert-base-uncased"
 

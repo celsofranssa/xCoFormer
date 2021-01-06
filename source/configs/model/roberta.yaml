@@ -17,5 +17,9 @@ tokenizer:
 
 lr: 1e-7
 
+loss: "source.loss.NPairsLoss.NPairsLoss"
+loss_hparams:
+  name: "NPairsLoss"
+
 predictions:
   path: "../resources/predictions/roberta_predictions.pt"

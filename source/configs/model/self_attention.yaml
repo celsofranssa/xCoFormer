@@ -12,6 +12,10 @@ x1_encoder_hparams:
 
 lr: 1e-7
 
+loss: "source.loss.TripletLoss.TripletLoss"
+loss_hparams:
+  name: "TripletLoss"
+
 x2_encoder: "source.encoder.SelfAttentionEncoder.SelfAttentionEncoder"
 
 x2_encoder_hparams:

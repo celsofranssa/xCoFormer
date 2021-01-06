@@ -3,41 +3,22 @@ from torch import nn
 
 
 class NPairsLoss(nn.Module):
-    """
-    The N-Pairs Loss.
-    It measures the loss given predicted tensors x1, x2 both with shape [batch_size, hidden_size],
-    and target tensor y which is the identity matrix with shape  [batch_size, batch_size].
-    """
 
-    def __init__(self, alpha=100):
+    def __init__(self, hparams):
         super(NPairsLoss, self).__init__()
-        self.ce = nn.CrossEntropyLoss()
-        self.alpha = alpha
+        self.name = hparams.name
 
-    def similarities(self, x1, x2):
+    def forward(self, r1, r2):
         """
-        Calculates the cosine similarity matrix for every pair (i, j),
-        where i is an embedding from x1 and j is another embedding from x2.
+        Computes the N-Pairs Loss between the r1 and r2 representations.
+        :param r1: Tensor of shape (batch_size, representation_size)
+        :param r2: Tensor of shape (batch_size, representation_size)
+        :return: he scalar loss
+        """
 
-        :param x1: a tensors with shape [batch_size, hidden_size].
-        :param x2: a tensors with shape [batch_size, hidden_size].
-        :return: the cosine similarity matrix with shape [batch_size, batch_size].
-        """
-        x1 = x1 / torch.norm(x1, dim=1, keepdim=True)
-        x2 = x2 / torch.norm(x2, p=2, dim=1, keepdim=True)
-        return self.alpha * torch.matmul(x1, x2.t())
+        scores = torch.matmul(r1, r2.t())
+        diagonal_mean = torch.mean(torch.diag(scores))
+        mean_log_row_sum_exp = torch.mean(torch.logsumexp(scores, dim=1))
+        return -diagonal_mean + mean_log_row_sum_exp
 
-    def forward(self, predict, target):
-        """
-        Computes the N-Pairs Loss between the target and predictions.
-        :param predict: the prediction of the model,
-        Contains the batches x1 (image embeddings) and x2 (description embeddings).
-        :param target: the identity matrix with shape  [batch_size, batch_size].
-        :return: N-Pairs Loss value.
-        """
-        x1, x2 = predict
-        predict = self.similarities(x1, x2)
-        self.show(predict)
-        # by construction the probability distribution must be concentrated on the diagonal of the similarities matrix.
-        # so, Cross Entropy can be used to measure the loss.
-        return self.ce(predict, target)
+
