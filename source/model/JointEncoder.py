@@ -5,6 +5,7 @@ from omegaconf import OmegaConf
 from pytorch_lightning.core.lightning import LightningModule
 
 from source.loss.MultipleNegativesRankingLoss import MultipleNegativesRankingLoss
+from source.loss.TripletLoss import TripletLoss
 from source.metric.MRRMetric import MRRMetric
 
 
@@ -23,6 +24,11 @@ class JointEncoder(LightningModule):
         encoder_module, encoder_class = encoder.rsplit('.', 1)
         encoder_module = importlib.import_module(encoder_module)
         return getattr(encoder_module, encoder_class)(encoder_hparams)
+
+    def get_loss(self, loss, loss_hparams):
+        encoder_module, encoder_class = loss.rsplit('.', 1)
+        encoder_module = importlib.import_module(encoder_module)
+        return getattr(encoder_module, encoder_class)(loss_hparams)
 
     def forward(self, x1, x2):
         r1 = self.x1_encoder(x1)
