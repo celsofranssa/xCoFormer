@@ -1,6 +1,6 @@
 defaults:
   - model: bert
-  - data: java_v01
+  - data: python_v01
 
 log:
   dir: "../resources/logs/"
@@ -13,6 +13,11 @@ tasks: [ "fit" ]
 stats:
   dir: "../resources/stats/"
 
+attentions:
+  dir: "../resources/attentions/"
+
 trainer:
   max_epochs: 16
+  patience: 3
+  min_delta: 0.03
   fast_dev_run: False

@@ -2,19 +2,17 @@
 
 name: "bert"
 
-x1_encoder: "source.encoder.BertEncoder.BertEncoder"
+x1_encoder: "source.explainer.BertExplainer.BertExplainer"
 
 x1_encoder_hparams:
   architecture: "bert-base-uncased"
-  output_attentions: False
+  output_attentions: True
 
-x2_encoder: "source.encoder.BertEncoder.BertEncoder"
+x2_encoder: "source.explainer.BertExplainer.BertExplainer"
 
 x2_encoder_hparams:
   architecture: "bert-base-uncased"
-  output_attentions: False
-
-lr: 1e-7
+  output_attentions: True
 
 loss: "source.loss.NPairsLoss.NPairsLoss"
 loss_hparams:
@@ -22,6 +20,3 @@ loss_hparams:
 
 tokenizer:
   architecture: "bert-base-uncased"
-
-predictions:
-  path: "../resources/predictions/bert_predictions.pt"

@@ -1,0 +1,31 @@
+# @package _group_
+
+name: "rnn"
+
+x1_encoder: "source.encoder.SelfAttentionEncoder.SelfAttentionEncoder"
+
+x1_encoder_hparams:
+  vocabulary_size: 50000
+  representation_size: 768
+  num_heads: 12
+  dropout: 0.1
+
+lr: 1e-7
+
+loss: "source.loss.TripletLoss.TripletLoss"
+loss_hparams:
+  name: "TripletLoss"
+
+x2_encoder: "source.encoder.SelfAttentionEncoder.SelfAttentionEncoder"
+
+x2_encoder_hparams:
+  vocabulary_size: 50000
+  representation_size: 768
+  num_heads: 12
+  dropout: 0.1
+
+tokenizer:
+  architecture: "bert-base-uncased"
+
+predictions:
+  path: "../resources/predictions/self_attention_predictions.pt"

@@ -9,7 +9,9 @@ x1_encoder_hparams:
   representation_size: 768
   hidden_size: 768
 
-lr: 1e-7
+#lr: 1e-7
+#lr: 1e-3 # test ok
+lr: 2.08e-4 # article deep code search
 
 x2_encoder: "source.encoder.DeepCodeSearchEncoder.DeepCodeSearchEncoder"
 

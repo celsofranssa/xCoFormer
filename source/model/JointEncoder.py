@@ -3,25 +3,36 @@ import importlib
 import torch
 from pytorch_lightning.core.lightning import LightningModule
 
-from source.loss.MultipleNegativesRankingLoss import MultipleNegativesRankingLoss
 from source.metric.MRRMetric import MRRMetric
 
 
 class JointEncoder(LightningModule):
-    """Encodes the code and docstring into an same space of embeddings."""
+    """Encodes the code and desc into an same space of embeddings."""
 
     def __init__(self, hparams):
+
         super(JointEncoder, self).__init__()
         self.hparams = hparams
+
+        # encoders
         self.x1_encoder = self.get_encoder(hparams.x1_encoder, hparams.x1_encoder_hparams)
         self.x2_encoder = self.get_encoder(hparams.x2_encoder, hparams.x2_encoder_hparams)
-        self.loss_fn = MultipleNegativesRankingLoss()
+
+        # loss function
+        self.loss_fn = self.get_loss(hparams.loss, hparams.loss_hparams) #MultipleNegativesRankingLoss()
+
+        # metric
         self.mrr = MRRMetric()
 
     def get_encoder(self, encoder, encoder_hparams):
         encoder_module, encoder_class = encoder.rsplit('.', 1)
         encoder_module = importlib.import_module(encoder_module)
         return getattr(encoder_module, encoder_class)(encoder_hparams)
+
+    def get_loss(self, loss, loss_hparams):
+        loss_module, loss_class = loss.rsplit('.', 1)
+        loss_module = importlib.import_module(loss_module)
+        return getattr(loss_module, loss_class)(loss_hparams)
 
     def forward(self, x1, x2):
         r1 = self.x1_encoder(x1)

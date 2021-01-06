@@ -13,6 +13,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from transformers import AutoTokenizer
 
 from source.DataModule.CodeDescDataModule import CodeDescDataModule
+from source.helper.EvalHelper import EvalHelper
 from source.model.JointEncoder import JointEncoder
 
 def get_logger(hparams):
@@ -22,12 +23,13 @@ def get_logger(hparams):
     )
 
 
-def get_model_checkpoint(hparams):
+def get_model_checkpoint_callback(hparams):
     return ModelCheckpoint(
         monitor="val_mrr",
         dirpath=hparams.model_checkpoint.dir,
-        filename=hparams.model.name + "_" + hparams.data.name + "_{epoch:02d}_{val_mrr:.2f}",
+        filename=hparams.model.name + "_" + hparams.data.name,
         save_top_k=1,
+        save_weights_only=True,
         mode="max"
     )
 
@@ -35,7 +37,8 @@ def get_model_checkpoint(hparams):
 def get_early_stopping_callback(hparams):
     return EarlyStopping(
         monitor='val_mrr',
-        patience=3,
+        patience=hparams.patience,
+        min_delta=hparams.min_delta,
         mode='max'
     )
 
@@ -46,28 +49,17 @@ def get_tokenizer(hparams):
     )
 
 
-def train(trainer, model, datamodule):
-    # training
-    datamodule.setup('fit')
-    trainer.fit(model, datamodule=datamodule)
-
-
-def test(trainer, model, datamodule):
-    # testing
-    datamodule.setup('test')
-    trainer.test(datamodule=datamodule)
-
-
 def fit(hparams):
-    print(OmegaConf.to_yaml(hparams))
+    print("Using the following params:\n", OmegaConf.to_yaml(hparams))
+
     # logger
     tb_logger = get_logger(hparams)
 
     # checkpoint callback
-    checkpoint_callback = get_model_checkpoint(hparams)
+    checkpoint_callback = get_model_checkpoint_callback(hparams)
 
     # early stopping callback
-    early_stopping_callback = get_early_stopping_callback(hparams)
+    early_stopping_callback = get_early_stopping_callback(hparams.trainer)
 
     # tokenizers
     x1_tokenizer = get_tokenizer(hparams.model)
@@ -94,104 +86,72 @@ def fit(hparams):
     trainer.test(datamodule=dm)
 
 
-def rank(predictions_path):
-    predictions = torch.load(predictions_path)
+def predict(hparams):
+    print("Not implemented yet")
 
-    descs = []
-    codes = []
-
-    for prediction in predictions:
-        descs.append(prediction["r1"])
-        codes.append(prediction["r2"])
-
-    # initialize a new index, using a HNSW index on Cosine Similarity
-    index = nmslib.init(method='hnsw', space='cosinesimil')
-    index.addDataPointBatch(codes)
-    index.createIndex()
-
-    # retrieve
-    neighbours = index.knnQueryBatch(descs, k=100, num_threads=4)
-
-    r_rank = []
-    positions = []
-    index_error = 0
-    for qid, neighbour in enumerate(neighbours):
-        rids, distances = neighbour
-        try:
-            p = np.where(rids == qid)[0][0]
-            positions.append(p + 1)
-            r_rank.append(1.0 / (p + 1))
-        except IndexError:
-            index_error += 1
-
-    print("Out of Rank: ", index_error)
-    print("MRR: ", mean(r_rank))
-    return positions
-
-
-def mrr_at_k(positions, k):
-    # positions_at_k = [p for p in positions if p <= k]
-    positions_at_k = [p if p <= k else 0 for p in positions]
-    rrank = 0.0
-    for pos in positions_at_k:
-        if pos != 0:
-            rrank += 1.0 / pos
-    return rrank / len(positions_at_k)
-
-
-def ssr_at_k(positions, k, num_samples):
-    return 1.0 * sum(i <= k for i in positions) / num_samples
-
-
-def checkpoint_stats(stats, stats_path):
-    with open(stats_path, "w") as stats_file:
-        for data in stats: 
-            stats_file.write(f"{json.dumps(data)}\n") 
 
 def eval(hparams):
     print(OmegaConf.to_yaml(hparams))
+    evaluator = EvalHelper(hparams)
+    evaluator.perform_eval()
 
-    thresholds = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
-    stats = []
-    positions = rank(hparams.model.predictions.path)
 
-    for k in thresholds:
-        stats.append(
-            {
-                "k": k,
-                "metric": "MRR",
-                "value": mrr_at_k(positions, k),
-                "model": hparams.model.name,
-                "datasets": hparams.data.name
-            }
-        )
-        stats.append(
-            {
-                "k": k,
-                "metric": "SSR",
-                "value": ssr_at_k(positions, k, hparams.data.test.num_samples),
-                "model": hparams.model.name,
-                "datasets": hparams.data.name
-            }
-        )
-    stats_path = hparams.stats.dir + hparams.model.name + "_" + hparams.data.name + ".stats"
-    #checkpoint_stats(stats, stats_path) # claudio
+def explain(hparams):
+    print("using the following parameters:\n", OmegaConf.to_yaml(hparams))
+    # override some of the params with new values
+    model = JointEncoder.load_from_checkpoint(
+        checkpoint_path=hparams.model_checkpoint.dir + hparams.model.name + "_" + hparams.data.name + ".ckpt",
+        **hparams.model
+    )
+
+    # tokenizers
+    x1_tokenizer = get_tokenizer(hparams.model)
+    x2_tokenizer = x1_tokenizer
+
+    code = "def init return true"
+    desc = "inits the app"
+
+    x1_length = hparams.data.x1_length
+    x1_length = hparams.data.x2_length
+
+    x1 = x1_tokenizer.encode(text=desc, max_length=x1_length, padding="max_length",
+                             truncation=True)
+    x2 = x2_tokenizer.encode(text=code, max_length=x1_length, padding="max_length",
+                             truncation=True)
+
+    x1 = torch.tensor([x1])
+    x2 = torch.tensor([x2])
+
+    # predict
+    model.eval()
+
+    r1_attentions, r2_attentions = model(x1, x2)
+
+    attentions = {
+        "r1_attentions": r1_attentions,
+        "r2_attentions": r2_attentions
+    }
+    torch.save(obj=attentions,
+               f=hparams.attentions.dir +
+                 hparams.model.name +
+                 "_" +
+                 hparams.data.name +
+                 ".pt")
 
 
 @hydra.main(config_path="configs/", config_name="config.yaml")
-def start(hparams):
+def perform_tasks(hparams):
     os.chdir(hydra.utils.get_original_cwd())
 
     if "fit" in hparams.tasks:
         fit(hparams)
     if "predict" in hparams.tasks:
-        test(hparams)
+        predict(hparams)
     if "eval" in hparams.tasks:
         eval(hparams)
+    if "explain" in hparams.tasks:
+        explain(hparams)
 
 
 if __name__ == '__main__':
-    #temp = torch.tensor([[0.1, 1.2], [2.2, 3.1], [4.9, 5.2]])
-    #print( temp.amax(dim=0) )
-    #exit() 
-    start()
+    perform_tasks()
