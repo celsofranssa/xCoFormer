@@ -2,7 +2,7 @@
 
 name: "rnn"
 
-x1_encoder: "source.encoder.RNNEncoder.RNNEncoder"
+x1_encoder: "source.encoder.SelfAttentionEncoder.SelfAttentionEncoder"
 
 x1_encoder_hparams:
   vocabulary_size: 50000
@@ -11,15 +11,16 @@ x1_encoder_hparams:
 
 lr: 1e-7
 
-x2_encoder: "source.encoder.RNNEncoder.RNNEncoder"
+x2_encoder: "source.encoder.SelfAttentionEncoder.SelfAttentionEncoder"
 
 x2_encoder_hparams:
   vocabulary_size: 50000
   representation_size: 768
-  hidden_size: 768
+  num_heads: 12
+  dropout: 0.1
 
 tokenizer:
   architecture: "bert-base-uncased"
 
 predictions:
-  path: "../resources/predictions/rnn_${data.name}_predictions.pt"
+  path: "../resources/predictions/self_attention_${data.name}_predictions.pt"
