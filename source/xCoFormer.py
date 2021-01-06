@@ -145,9 +145,8 @@ def ssr_at_k(positions, k, num_samples):
 
 def checkpoint_stats(stats, stats_path):
     with open(stats_path, "w") as stats_file:
-        for data in stats:
-            stats_file.write(f"{json.dumps(data)}\n")
-
+        for data in stats: 
+            stats_file.write(f"{json.dumps(data)}\n") 
 
 def eval(hparams):
     print(OmegaConf.to_yaml(hparams))
@@ -176,7 +175,7 @@ def eval(hparams):
             }
         )
     stats_path = hparams.stats.dir + hparams.model.name + "_" + hparams.data.name + ".stats"
-    checkpoint_stats(stats, stats_path)
+    #checkpoint_stats(stats, stats_path) # claudio
 
 
 @hydra.main(config_path="configs/", config_name="config.yaml")
@@ -192,4 +191,7 @@ def start(hparams):
 
 
 if __name__ == '__main__':
+    #temp = torch.tensor([[0.1, 1.2], [2.2, 3.1], [4.9, 5.2]])
+    #print( temp.amax(dim=0) )
+    #exit() 
     start()

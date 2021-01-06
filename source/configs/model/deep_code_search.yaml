@@ -1,0 +1,25 @@
+# @package _group_
+
+name: "deepcodesearch"
+
+x1_encoder: "source.encoder.DeepCodeSearchEncoder.DeepCodeSearchEncoder"
+
+x1_encoder_hparams:
+  vocabulary_size: 50000
+  representation_size: 768
+  hidden_size: 768
+
+lr: 1e-7
+
+x2_encoder: "source.encoder.DeepCodeSearchEncoder.DeepCodeSearchEncoder"
+
+x2_encoder_hparams:
+  vocabulary_size: 50000
+  representation_size: 768
+  hidden_size: 768
+
+tokenizer:
+  architecture: "bert-base-uncased"
+
+predictions:
+  path: "../resources/predictions/rnn_predictions.pt"

@@ -46,7 +46,10 @@ xCoFormer/
 The following bash command fits the RNN model over Java dataset using batch_size=128 and a single epoch.
 ```
 # Adds the directory to the environment variable to be found
-PYTHONPATH=$PYTHONPATH:<path-to-project-dir>/xCoFormer/ 
+PYTHONPATH=$PYTHONPATH:<path-to-project-dir>/xCoFormer 
+
+# Quick test with a batch
+python xCoFormer.py tasks=[fit] model=rnn data=java_v01 data.batch_size=128 trainer.max_epochs=1  trainer.fast_dev_run=True
 
 python xCoFormer.py tasks=[fit] model=rnn data=java_v01 data.batch_size=128 trainer.max_epochs=1
 ```
