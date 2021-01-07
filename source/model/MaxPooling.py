@@ -17,8 +17,5 @@ class MaxPooling(LightningModule):
         :return:
         """
         attention_mask = attention_mask.unsqueeze(-1).expand(hidden_states.size()).float()
-        hidden_states[attention_mask == 0] = -1e9  # Set padding tokens to large negative value
+        hidden_states = 1e9 * (attention_mask - 1) + hidden_states
         return torch.max(hidden_states, 1)[0]
-
-
->>>>>>> 97699ed445479fbe726b44e18cda87a2b04578c2

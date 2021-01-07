@@ -25,3 +25,7 @@ tokenizer:
 
 predictions:
   path: "../resources/predictions/rnn_predictions.pt"
+
+loss: "source.loss.TripletLoss.TripletLoss"
+loss_hparams:
+  name: "TripletLoss"

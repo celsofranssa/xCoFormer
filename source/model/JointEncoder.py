@@ -40,14 +40,36 @@ class JointEncoder(LightningModule):
         return r1, r2
 
     def configure_optimizers(self):
-        return torch.optim.Adam(
+        optimizer =  torch.optim.Adam(
             self.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=True
         )
+        #decayRate = 0.96
+        #my_lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer=optimizer, gamma=decayRate)
+        #my_lr_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=optimizer)
+        my_lr_scheduler = torch.optim.lr_scheduler.MultiplicativeLR(optimizer=optimizer, lr_lambda=lambda epoch: 0.95)
+        return {
+            'optimizer' : optimizer,
+            'lr_scheduler' : my_lr_scheduler,
+            'monitor': 'val_loss'
+        }        
+        
+        '''
+        lr_scheduler =  {
+            'scheduler' : my_lr_scheduler,
+            'name' : 'my_loggin_name' 
+        }
+        return [optimizer], [lr_scheduler]
+        #return self.temp
+
+        #return my_lr_scheduler
+        #return self.optimizer
+        '''
 
     def training_step(self, batch, batch_idx):
         x1, x2 = batch["x1"], batch["x2"]
         r1, r2 = self(x1, x2)
         train_loss = self.loss_fn(r1, r2)
+        #print(self.optimizers()) # print learning rate epoch
         return train_loss
 
     def validation_step(self, batch, batch_idx):

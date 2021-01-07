@@ -2,7 +2,8 @@ import torch.nn
 from pytorch_lightning import LightningModule
 from torch import nn
 
-from source.model.AveragePooling import AveragePooling
+#from source.model.AveragePooling import AveragePooling
+from source.model.MaxPooling import MaxPooling
 
 
 class DeepCodeSearchEncoder(LightningModule):
@@ -23,7 +24,8 @@ class DeepCodeSearchEncoder(LightningModule):
             batch_first=True,
             bidirectional=True)
 
-        self.pool = AveragePooling()
+        #self.pool = AveragePooling()
+        self.pool = MaxPooling()
 
     def forward(self, x):
         attention_mask = (x > 0).int()
