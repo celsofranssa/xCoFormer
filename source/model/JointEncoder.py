@@ -45,6 +45,7 @@ class JointEncoder(LightningModule):
         )
 
     def training_step(self, batch, batch_idx):
+
         x1, x2 = batch["x1"], batch["x2"]
         r1, r2 = self(x1, x2)
         train_loss = self.loss_fn(r1, r2)
