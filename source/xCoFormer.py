@@ -109,15 +109,12 @@ def explain(hparams):
     x1_tokenizer = get_tokenizer(hparams.model)
     x2_tokenizer = x1_tokenizer
 
-    code = "def init return true"
-    desc = "inits the app"
-
     x1_length = hparams.data.x1_length
     x1_length = hparams.data.x2_length
 
-    x1 = x1_tokenizer.encode(text=desc, max_length=x1_length, padding="max_length",
+    x1 = x1_tokenizer.encode(text=hparams.desc, max_length=x1_length, padding="max_length",
                              truncation=True)
-    x2 = x2_tokenizer.encode(text=code, max_length=x1_length, padding="max_length",
+    x2 = x2_tokenizer.encode(text=hparams.code, max_length=x1_length, padding="max_length",
                              truncation=True)
 
     x1 = torch.tensor([x1])

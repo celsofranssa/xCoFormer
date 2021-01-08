@@ -18,5 +18,8 @@ loss: "source.loss.NPairsLoss.NPairsLoss"
 loss_hparams:
   name: "NPairsLoss"
 
+code: ""
+desc: ""
+
 tokenizer:
   architecture: "bert-base-uncased"
