@@ -88,7 +88,28 @@ def fit(hparams):
 
 
 def predict(hparams):
-    print("Not implemented yet")
+    # tokenizers
+    x1_tokenizer = get_tokenizer(hparams.model)
+    x2_tokenizer = x1_tokenizer
+
+    # data
+    dm = CodeDescDataModule(hparams.data, x1_tokenizer, x2_tokenizer)
+
+    # model
+    model = JointEncoder.load_from_checkpoint(
+        checkpoint_path=hparams.model_checkpoint.dir + hparams.model.name + "_" + hparams.data.name + ".ckpt"
+    )
+
+    # trainer
+    trainer = Trainer(
+        fast_dev_run=hparams.trainer.fast_dev_run,
+        max_epochs=hparams.trainer.max_epochs,
+        gpus=1
+    )
+
+    # testing
+    dm.setup('test')
+    trainer.test(model=model, datamodule=dm)
 
 
 def eval(hparams):
@@ -112,9 +133,9 @@ def explain(hparams):
     x1_length = hparams.data.x1_length
     x1_length = hparams.data.x2_length
 
-    x1 = x1_tokenizer.encode(text=hparams.desc, max_length=x1_length, padding="max_length",
+    x1 = x1_tokenizer.encode(text=hparams.attentions.desc, max_length=x1_length, padding="max_length",
                              truncation=True)
-    x2 = x2_tokenizer.encode(text=hparams.code, max_length=x1_length, padding="max_length",
+    x2 = x2_tokenizer.encode(text=hparams.attentions.code, max_length=x1_length, padding="max_length",
                              truncation=True)
 
     x1 = torch.tensor([x1])
