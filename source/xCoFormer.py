@@ -104,6 +104,7 @@ def predict(hparams):
     trainer = Trainer(
         fast_dev_run=hparams.trainer.fast_dev_run,
         max_epochs=hparams.trainer.max_epochs,
+        enable_pl_optimizer=True,
         gpus=1
     )
 
