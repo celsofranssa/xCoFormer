@@ -1,6 +1,6 @@
 # @package _group_
 
-name: "rnn"
+name: "lstm"
 
 x1_encoder: "source.encoder.LSTMEncoder.LSTMEncoder"
 
