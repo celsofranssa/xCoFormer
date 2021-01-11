@@ -15,8 +15,7 @@ stats:
 
 attentions:
   dir: "../resources/attentions/"
-  code: "def init"
-  desc: "do something"
+  sample_id: 0
 
 trainer:
   max_epochs: 16

@@ -14,6 +14,7 @@ from transformers import AutoTokenizer
 
 from source.DataModule.CodeDescDataModule import CodeDescDataModule
 from source.helper.EvalHelper import EvalHelper
+from source.helper.ExpHelper import get_sample
 from source.model.JointEncoder import JointEncoder
 
 
@@ -133,11 +134,17 @@ def explain(hparams):
     x2_tokenizer = x1_tokenizer
 
     x1_length = hparams.data.x1_length
-    x1_length = hparams.data.x2_length
+    x2_length = hparams.data.x2_length
+
+
+    code, desc = get_sample(
+        hparams.attentions.sample_id,
+        hparams.attentions.dir + hparams.data.name + "_samples.jsonl"
+    )
 
     x1 = x1_tokenizer.encode(text=desc, max_length=x1_length, padding="max_length",
                              truncation=True)
-    x2 = x2_tokenizer.encode(text=code, max_length=x1_length, padding="max_length",
+    x2 = x2_tokenizer.encode(text=code, max_length=x2_length, padding="max_length",
                              truncation=True)
 
     x1 = torch.tensor([x1])
@@ -183,7 +190,7 @@ def update_hparams(hparams):
     # num_steps = hparams.data.train.num_samples / hparams.data.batch_size
     # num_epochs = hparams.trainer.max_epochs
     # hparams.model.steps = num_epochs * num_steps
-    # return hparams
+    return hparams
 
 
 if __name__ == '__main__':
