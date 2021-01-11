@@ -15,4 +15,4 @@ def get_sample(sample_id, samples_path):
             sample_id = 0
         sample = json.loads(lines[sample_id])
 
-    return sample["code"], sample["desc"]
+    return sample["desc"], sample["code"]

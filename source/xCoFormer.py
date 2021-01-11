@@ -136,7 +136,7 @@ def explain(hparams):
     x1_length = hparams.data.x1_length
     x2_length = hparams.data.x2_length
 
-    code, desc = get_sample(
+    desc, code = get_sample(
         hparams.attentions.sample_id,
         hparams.attentions.dir + hparams.data.name + "_samples.jsonl"
     )
@@ -152,10 +152,10 @@ def explain(hparams):
     r1_attentions, r2_attentions = model(torch.tensor([x1]), torch.tensor([x2]))
 
     attentions = {
-        "desc": desc,
-        "desc_tokens": x1_tokenizer.convert_ids_to_tokens(x1),
-        "code": code,
-        "code_tokens": x2_tokenizer.convert_ids_to_tokens(x2),
+        "x1": desc,
+        "x1_tokens": x1_tokenizer.convert_ids_to_tokens(x1),
+        "x2": code,
+        "x2_tokens": x2_tokenizer.convert_ids_to_tokens(x2),
         "r1_attentions": r1_attentions,
         "r2_attentions": r2_attentions
     }
