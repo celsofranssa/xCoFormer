@@ -136,7 +136,6 @@ def explain(hparams):
     x1_length = hparams.data.x1_length
     x2_length = hparams.data.x2_length
 
-
     code, desc = get_sample(
         hparams.attentions.sample_id,
         hparams.attentions.dir + hparams.data.name + "_samples.jsonl"
@@ -147,15 +146,16 @@ def explain(hparams):
     x2 = x2_tokenizer.encode(text=code, max_length=x2_length, padding="max_length",
                              truncation=True)
 
-    x1 = torch.tensor([x1])
-    x2 = torch.tensor([x2])
-
     # predict
     model.eval()
 
-    r1_attentions, r2_attentions = model(x1, x2)
+    r1_attentions, r2_attentions = model(torch.tensor([x1]), torch.tensor([x2]))
 
     attentions = {
+        "desc": desc,
+        "desc_tokens": x1_tokenizer.convert_ids_to_tokens(x1),
+        "code": code,
+        "code_tokens": x2_tokenizer.convert_ids_to_tokens(x2),
         "r1_attentions": r1_attentions,
         "r2_attentions": r2_attentions
     }
@@ -164,7 +164,7 @@ def explain(hparams):
                  hparams.model.name +
                  "_" +
                  hparams.data.name +
-                 ".pt")
+                 "_attentions.pt")
 
 
 @hydra.main(config_path="configs/", config_name="config.yaml")
