@@ -40,11 +40,24 @@ class JointEncoder(LightningModule):
         return r1, r2
 
     def configure_optimizers(self):
-        "TODO: put all optimizers"
-        return torch.optim.Adam(
-            self.x1_encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=0,
-            amsgrad=True
-        )
+
+        # print("steps: ", self.trainer.max_epochs)
+        # print("steps_per_epoch:", len(self.datamodule.train_dataloader()))
+
+        optimizers = [
+            torch.optim.Adam(self.x1_encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
+                             weight_decay=0, amsgrad=True),
+            torch.optim.Adam(self.x2_encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
+                             weight_decay=0, amsgrad=True)
+        ]
+        steps = 2000
+        schedulers = [
+            torch.optim.lr_scheduler.CyclicLR(optimizers[0], mode='triangular2', base_lr=1e-7, max_lr=1e-3,
+                                              step_size_up=steps, cycle_momentum=False),
+            torch.optim.lr_scheduler.CyclicLR(optimizers[1], mode='triangular2', base_lr=1e-7, max_lr=1e-3,
+                                              step_size_up=steps, cycle_momentum=False)
+        ]
+        return optimizers, schedulers
 
     def optimizer_step(self, epoch, batch_idx, optimizer, optimizer_idx, optimizer_closure, on_tpu,
                        using_native_amp, using_lbfgs):
@@ -59,7 +72,7 @@ class JointEncoder(LightningModule):
             if batch_idx % 2 != 0:
                 optimizer.step(closure=optimizer_closure)
 
-    def training_step(self, batch, batch_idx):
+    def training_step(self, batch, batch_idx, optimizer_idx):
 
         x1, x2 = batch["x1"], batch["x2"]
         r1, r2 = self(x1, x2)
@@ -87,3 +100,9 @@ class JointEncoder(LightningModule):
 
     def test_epoch_end(self, outs):
         self.log('m_test_mrr', self.mrr.compute())
+
+    def get_x1_encoder(self):
+        return self.x1_encoder
+
+    def get_x2_encoder(self):
+        return self.x1_encoder

@@ -74,6 +74,7 @@ def fit(hparams):
         fast_dev_run=hparams.trainer.fast_dev_run,
         max_epochs=hparams.trainer.max_epochs,
         gpus=1,
+        enable_pl_optimizer=True,
         logger=tb_logger,
         callbacks=[checkpoint_callback, early_stopping_callback]
     )
@@ -84,7 +85,7 @@ def fit(hparams):
 
     # testing
     dm.setup('test')
-    trainer.test(datamodule=dm)
+    trainer.test(model, datamodule=dm)
 
 
 def predict(hparams):
@@ -162,6 +163,7 @@ def explain(hparams):
 @hydra.main(config_path="configs/", config_name="config.yaml")
 def perform_tasks(hparams):
     os.chdir(hydra.utils.get_original_cwd())
+    hparams = update_hparams(hparams)
 
     if "fit" in hparams.tasks:
         fit(hparams)
@@ -171,6 +173,11 @@ def perform_tasks(hparams):
         eval(hparams)
     if "explain" in hparams.tasks:
         explain(hparams)
+
+
+def update_hparams(hparams):
+    hparams.model.predictions.path = f"../resources/predictions/bert_{hparams.data.name}_predictions.pt"
+    return hparams
 
 
 if __name__ == '__main__':
