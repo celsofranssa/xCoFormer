@@ -41,7 +41,7 @@ class JointEncoder(LightningModule):
 
     def configure_optimizers(self):
 
-        # print("steps: ", self.trainer.max_epochs)
+        print("num_batches: ", len(self.train_dataloader()))
         # print("steps_per_epoch:", len(self.datamodule.train_dataloader()))
 
         optimizers = [

@@ -135,9 +135,9 @@ def explain(hparams):
     x1_length = hparams.data.x1_length
     x1_length = hparams.data.x2_length
 
-    x1 = x1_tokenizer.encode(text=hparams.attentions.desc, max_length=x1_length, padding="max_length",
+    x1 = x1_tokenizer.encode(text=desc, max_length=x1_length, padding="max_length",
                              truncation=True)
-    x2 = x2_tokenizer.encode(text=hparams.attentions.code, max_length=x1_length, padding="max_length",
+    x2 = x2_tokenizer.encode(text=code, max_length=x1_length, padding="max_length",
                              truncation=True)
 
     x1 = torch.tensor([x1])
@@ -176,8 +176,14 @@ def perform_tasks(hparams):
 
 
 def update_hparams(hparams):
+    # update predictions
     hparams.model.predictions.path = f"../resources/predictions/bert_{hparams.data.name}_predictions.pt"
-    return hparams
+
+    # update steps
+    # num_steps = hparams.data.train.num_samples / hparams.data.batch_size
+    # num_epochs = hparams.trainer.max_epochs
+    # hparams.model.steps = num_epochs * num_steps
+    # return hparams
 
 
 if __name__ == '__main__':
