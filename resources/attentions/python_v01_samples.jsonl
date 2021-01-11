@@ -1,1 +1,1 @@
-{"id":0,"code":"sum the elements of the iterable, and return the result as a float","desc":"def float_sum(iterable): dcnl dcsp return float(sum(iterable))"}
+{"id":0,"desc":"sum the elements of the iterable, and return the result as a float","code":"def float_sum(iterable): dcnl dcsp return float(sum(iterable))"}
