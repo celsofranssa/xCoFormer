@@ -59,17 +59,32 @@ def rank(data_dir):
     return positions
 
 
-def mrr_at_k(positions, k):
+def mrr_at_k(positions, k, num_samples):
+    """
+    Evaluates the MMR considering only the positions up to k.
+    :param positions:
+    :param k:
+    :param num_samples:
+    :return:
+    """
     # positions_at_k = [p for p in positions if p <= k]
     positions_at_k = [p if p <= k else 0 for p in positions]
     rrank = 0.0
     for pos in positions_at_k:
         if pos != 0:
             rrank += 1.0 / pos
-    return rrank / len(positions_at_k)
+
+    return rrank / num_samples
 
 
-def ssr_at_k(positions, k, num_samples):
+def recall_at_k(positions, k, num_samples):
+    """
+    Evaluates the Recall considering only the positions up to k
+    :param positions:
+    :param k:
+    :param num_samples:
+    :return:
+    """
     return 1.0 * sum(i <= k for i in positions) / num_samples
 
 
@@ -82,7 +97,7 @@ def checkpoint_stats(stats, stats_path):
 def eval(data, num_samples, model):
     thresholds = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
     stats = []
-    data_dir = "/home/celso/projects/semantic_code_search/resources/datasets/" + data + "/"
+    data_dir = "../resources/datasets/" + data + "/"
     positions = rank(data_dir)
 
     for k in thresholds:
@@ -90,7 +105,7 @@ def eval(data, num_samples, model):
             {
                 "k": k,
                 "metric": "MRR",
-                "value": mrr_at_k(positions, k),
+                "value": mrr_at_k(positions, k, num_samples),
                 "model": model,
                 "datasets": data
             }
@@ -98,13 +113,13 @@ def eval(data, num_samples, model):
         stats.append(
             {
                 "k": k,
-                "metric": "SSR",
-                "value": ssr_at_k(positions, k, num_samples),
+                "metric": "Recall",
+                "value": recall_at_k(positions, k, num_samples),
                 "model": model,
                 "datasets": data
             }
         )
-    stats_path = "/home/celso/projects/semantic_code_search/resources/stats/" + model + "_" + data + ".stats"
+    stats_path = "../resources/stats/" + model + "_" + data + ".stats"
     checkpoint_stats(stats, stats_path)
 
 

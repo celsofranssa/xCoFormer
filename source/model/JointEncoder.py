@@ -40,22 +40,20 @@ class JointEncoder(LightningModule):
         return r1, r2
 
     def configure_optimizers(self):
-        num_batches = len(self.train_dataloader()) / self.trainer.accumulate_grad_batches
-        print("nummm ", num_batches)
+        # num_batches = len(self.train_dataloader()) / self.trainer.accumulate_grad_batches
+        # print("nummm ", num_batches)
         # optimizers
         optimizers = [
-            torch.optim.Adam(self.x1_encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
-                             weight_decay=0, amsgrad=True),
-            torch.optim.Adam(self.x2_encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
-                             weight_decay=0, amsgrad=True)
+            torch.optim.SGD(self.x1_encoder.parameters(), lr=self.hparams.lr, momentum=0.9),
+            torch.optim.SGD(self.x2_encoder.parameters(), lr=self.hparams.lr, momentum=0.9)
         ]
         # schedulers
         steps = 2000
         schedulers = [
             torch.optim.lr_scheduler.CyclicLR(optimizers[0], mode='triangular2', base_lr=1e-7, max_lr=1e-3,
-                                              step_size_up=steps, cycle_momentum=False),
+                                              step_size_up=steps),
             torch.optim.lr_scheduler.CyclicLR(optimizers[1], mode='triangular2', base_lr=1e-7, max_lr=1e-3,
-                                              step_size_up=steps, cycle_momentum=False)
+                                              step_size_up=steps)
         ]
         return optimizers, schedulers
 
