@@ -187,7 +187,7 @@ def perform_tasks(hparams):
 
 def update_hparams(hparams):
     # update predictions
-    hparams.model.predictions.path = f"../resources/predictions/bert_{hparams.data.name}_predictions.pt"
+    hparams.model.predictions.path = f"../resources/predictions/{hparams.model.name}_{hparams.data.name}_predictions.pt"
 
     # update steps
     # num_steps = hparams.data.train.num_samples / hparams.data.batch_size
