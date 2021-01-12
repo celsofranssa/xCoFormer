@@ -42,6 +42,7 @@ class JointEncoder(LightningModule):
     def configure_optimizers(self):
         num_batches = len(self.train_dataloader()) / self.trainer.accumulate_grad_batches
         print("nummm ", num_batches)
+
         # optimizers
         optimizers = [
             torch.optim.Adam(self.x1_encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
