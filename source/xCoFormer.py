@@ -52,7 +52,7 @@ def get_tokenizer(hparams):
 
 
 def fit(hparams):
-    print("Using the following params:\n", OmegaConf.to_yaml(hparams))
+    print("Fitting with the following parameters:\n", OmegaConf.to_yaml(hparams))
 
     # logger
     tb_logger = get_logger(hparams)
@@ -116,7 +116,7 @@ def predict(hparams):
 
 
 def eval(hparams):
-    print(OmegaConf.to_yaml(hparams))
+    print("Evaluating with the following parameters:\n", OmegaConf.to_yaml(hparams))
     evaluator = EvalHelper(hparams)
     evaluator.perform_eval()
 

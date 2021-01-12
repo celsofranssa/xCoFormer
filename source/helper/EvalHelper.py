@@ -25,8 +25,8 @@ class EvalHelper:
         for pos in positions_at_k:
             if pos != 0:
                 rrank += 1.0 / pos
+
         return rrank / num_samples
-        # return rrank / len(positions_at_k)
 
     def recall_at_k(self, positions, k, num_samples):
         """
@@ -65,18 +65,22 @@ class EvalHelper:
 
     def retrieve(self, index, descs, k=100):
         # retrieve
+        print("decs ", len(descs))
+
         neighbours = index.knnQueryBatch(descs, k=k)
+        print("nei ", len(neighbours))
 
         r_rank = []
         positions = []
         index_error = 0
+
         for qid, neighbour in enumerate(neighbours):
             rids, distances = neighbour
             try:
                 p = np.where(rids == qid)[0][0]
                 positions.append(p + 1)
                 r_rank.append(1.0 / (p + 1))
-            except IndexError:
+            except:
                 index_error += 1
 
         print("Out of Rank: ", index_error)
@@ -88,23 +92,25 @@ class EvalHelper:
         # load predictions
         descs, codes = self.load_predictions()
 
+        print("desc_rank ", descs)
+
         index = self.init_index(codes)
 
         return self.retrieve(index, descs)
 
     def perform_eval(self):
-        print(OmegaConf.to_yaml(self.hparams))
-
         thresholds = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
         stats = []
         positions = self.rank()
+
+        print(positions)
 
         for k in thresholds:
             stats.append(
                 {
                     "k": k,
                     "metric": "MRR",
-                    "value": self.mrr_at_k(positions, k,self.hparams.data.test.num_samples),
+                    "value": self.mrr_at_k(positions, k, self.hparams.data.test.num_samples),
                     "model": self.hparams.model.name,
                     "datasets": self.hparams.data.name
                 }
@@ -112,7 +118,7 @@ class EvalHelper:
             stats.append(
                 {
                     "k": k,
-                    "metric": "SSR",
+                    "metric": "Recall",
                     "value": self.recall_at_k(positions, k, self.hparams.data.test.num_samples),
                     "model": self.hparams.model.name,
                     "datasets": self.hparams.data.name
