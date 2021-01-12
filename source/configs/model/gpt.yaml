@@ -1,0 +1,27 @@
+# @package _group_
+
+name: "bert"
+
+x1_encoder: "source.encoder.BertEncoder.BertEncoder"
+
+x1_encoder_hparams:
+  architecture: "bert-base-uncased"
+  output_attentions: False
+
+x2_encoder: "source.encoder.BertEncoder.BertEncoder"
+
+x2_encoder_hparams:
+  architecture: "bert-base-uncased"
+  output_attentions: False
+
+lr: 1e-7
+
+loss: "source.loss.NPairsLoss.NPairsLoss"
+loss_hparams:
+  name: "NPairsLoss"
+
+tokenizer:
+  architecture: "bert-base-uncased"
+
+predictions:
+  path: "../resources/predictions/bert_predictions.pt"

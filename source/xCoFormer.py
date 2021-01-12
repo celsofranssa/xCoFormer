@@ -46,9 +46,10 @@ def get_early_stopping_callback(hparams):
 
 
 def get_tokenizer(hparams):
-    return AutoTokenizer.from_pretrained(
+    tokenizer = AutoTokenizer.from_pretrained(
         hparams.tokenizer.architecture
     )
+    if hparams.tokenizer.architecture ==
 
 
 def fit(hparams):

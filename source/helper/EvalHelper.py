@@ -65,10 +65,8 @@ class EvalHelper:
 
     def retrieve(self, index, descs, k=100):
         # retrieve
-        print("decs ", len(descs))
 
         neighbours = index.knnQueryBatch(descs, k=k)
-        print("nei ", len(neighbours))
 
         r_rank = []
         positions = []
@@ -92,8 +90,6 @@ class EvalHelper:
         # load predictions
         descs, codes = self.load_predictions()
 
-        print("desc_rank ", descs)
-
         index = self.init_index(codes)
 
         return self.retrieve(index, descs)
@@ -102,8 +98,6 @@ class EvalHelper:
         thresholds = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
         stats = []
         positions = self.rank()
-
-        print(positions)
 
         for k in thresholds:
             stats.append(
