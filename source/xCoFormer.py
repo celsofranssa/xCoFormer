@@ -49,7 +49,9 @@ def get_tokenizer(hparams):
     tokenizer = AutoTokenizer.from_pretrained(
         hparams.tokenizer.architecture
     )
-    if hparams.tokenizer.architecture ==
+    if hparams.tokenizer.architecture == "gpt2":
+        tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+    return tokenizer
 
 
 def fit(hparams):
