@@ -14,9 +14,14 @@ x2_encoder_hparams:
   architecture: "bert-base-uncased"
   output_attentions: True
 
+lr: 1e-7
+
 loss: "source.loss.NPairsLoss.NPairsLoss"
 loss_hparams:
   name: "NPairsLoss"
 
 tokenizer:
   architecture: "bert-base-uncased"
+
+predictions:
+  path: "../resources/predictions/bert_predictions.pt"

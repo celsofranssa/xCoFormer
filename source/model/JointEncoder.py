@@ -19,7 +19,7 @@ class JointEncoder(LightningModule):
         self.x2_encoder = self.get_encoder(hparams.x2_encoder, hparams.x2_encoder_hparams)
 
         # loss function
-        self.loss_fn = self.get_loss(hparams.loss, hparams.loss_hparams) #MultipleNegativesRankingLoss()
+        self.loss_fn = self.get_loss(hparams.loss, hparams.loss_hparams)  # MultipleNegativesRankingLoss()
 
         # metric
         self.mrr = MRRMetric()
@@ -40,32 +40,41 @@ class JointEncoder(LightningModule):
         return r1, r2
 
     def configure_optimizers(self):
-        optimizer =  torch.optim.Adam(
-            self.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=True
-        )
-        #decayRate = 0.96
-        #my_lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer=optimizer, gamma=decayRate)
-        #my_lr_scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=optimizer)
-        my_lr_scheduler = torch.optim.lr_scheduler.MultiplicativeLR(optimizer=optimizer, lr_lambda=lambda epoch: 0.95)
-        return {
-            'optimizer' : optimizer,
-            'lr_scheduler' : my_lr_scheduler,
-            'monitor': 'val_loss'
-        }        
-        
-        '''
-        lr_scheduler =  {
-            'scheduler' : my_lr_scheduler,
-            'name' : 'my_loggin_name' 
-        }
-        return [optimizer], [lr_scheduler]
-        #return self.temp
+        num_batches = len(self.train_dataloader()) / self.trainer.accumulate_grad_batches
+        print("nummm ", num_batches)
 
-        #return my_lr_scheduler
-        #return self.optimizer
-        '''
+        # optimizers
+        optimizers = [
+            torch.optim.Adam(self.x1_encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
+                             weight_decay=0, amsgrad=True),
+            torch.optim.Adam(self.x2_encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
+                             weight_decay=0, amsgrad=True)
+        ]
+        # schedulers
+        steps = 2000
+        schedulers = [
+            torch.optim.lr_scheduler.CyclicLR(optimizers[0], mode='triangular2', base_lr=1e-7, max_lr=1e-3,
+                                              step_size_up=steps, cycle_momentum=False),
+            torch.optim.lr_scheduler.CyclicLR(optimizers[1], mode='triangular2', base_lr=1e-7, max_lr=1e-3,
+                                              step_size_up=steps, cycle_momentum=False)
+        ]
+        return optimizers, schedulers
 
-    def training_step(self, batch, batch_idx):
+    def optimizer_step(self, epoch, batch_idx, optimizer, optimizer_idx, optimizer_closure, on_tpu,
+                       using_native_amp, using_lbfgs):
+
+        # update x1 opt every even steps
+        if optimizer_idx == 0:
+            if batch_idx % 2 == 0:
+                optimizer.step(closure=optimizer_closure)
+
+        # update x2 opt every odd steps
+        if optimizer_idx == 1:
+            if batch_idx % 2 != 0:
+                optimizer.step(closure=optimizer_closure)
+
+    def training_step(self, batch, batch_idx, optimizer_idx):
+
         x1, x2 = batch["x1"], batch["x2"]
         r1, r2 = self(x1, x2)
         train_loss = self.loss_fn(r1, r2)
@@ -93,3 +102,9 @@ class JointEncoder(LightningModule):
 
     def test_epoch_end(self, outs):
         self.log('m_test_mrr', self.mrr.compute())
+
+    def get_x1_encoder(self):
+        return self.x1_encoder
+
+    def get_x2_encoder(self):
+        return self.x1_encoder

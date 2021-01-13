@@ -17,7 +17,7 @@ class GPTEncoder(LightningModule):
         self.pooling = AveragePooling()
 
     def forward(self, features):
-        attention_mask = (features > 1).int()
+        attention_mask = (features < 50257).int() # 50257 is for PAD
         hidden_states = self.bert_encoder(features, attention_mask)[0]
 
         return self.pooling(

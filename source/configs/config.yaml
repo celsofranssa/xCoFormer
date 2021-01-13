@@ -15,6 +15,7 @@ stats:
 
 attentions:
   dir: "../resources/attentions/"
+  sample_id: 0
 
 trainer:
   max_epochs: 16

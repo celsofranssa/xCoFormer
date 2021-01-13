@@ -14,6 +14,7 @@ from transformers import AutoTokenizer
 
 from source.DataModule.CodeDescDataModule import CodeDescDataModule
 from source.helper.EvalHelper import EvalHelper
+from source.helper.ExpHelper import get_sample
 from source.model.JointEncoder import JointEncoder
 
 def get_logger(hparams):
@@ -44,13 +45,16 @@ def get_early_stopping_callback(hparams):
 
 
 def get_tokenizer(hparams):
-    return AutoTokenizer.from_pretrained(
+    tokenizer = AutoTokenizer.from_pretrained(
         hparams.tokenizer.architecture
     )
+    if hparams.tokenizer.architecture == "gpt2":
+        tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+    return tokenizer
 
 
 def fit(hparams):
-    print("Using the following params:\n", OmegaConf.to_yaml(hparams))
+    print("Fitting with the following parameters:\n", OmegaConf.to_yaml(hparams))
 
     # logger
     tb_logger = get_logger(hparams)
@@ -73,6 +77,7 @@ def fit(hparams):
         fast_dev_run=hparams.trainer.fast_dev_run,
         max_epochs=hparams.trainer.max_epochs,
         gpus=1,
+        enable_pl_optimizer=True,
         logger=tb_logger,
         callbacks=[checkpoint_callback, early_stopping_callback]
     )
@@ -83,15 +88,37 @@ def fit(hparams):
 
     # testing
     dm.setup('test')
-    trainer.test(datamodule=dm)
+    trainer.test(model, datamodule=dm)
 
 
 def predict(hparams):
-    print("Not implemented yet")
+    # tokenizers
+    x1_tokenizer = get_tokenizer(hparams.model)
+    x2_tokenizer = x1_tokenizer
+
+    # data
+    dm = CodeDescDataModule(hparams.data, x1_tokenizer, x2_tokenizer)
+
+    # model
+    model = JointEncoder.load_from_checkpoint(
+        checkpoint_path=hparams.model_checkpoint.dir + hparams.model.name + "_" + hparams.data.name + ".ckpt"
+    )
+
+    # trainer
+    trainer = Trainer(
+        fast_dev_run=hparams.trainer.fast_dev_run,
+        max_epochs=hparams.trainer.max_epochs,
+        enable_pl_optimizer=True,
+        gpus=1
+    )
+
+    # testing
+    dm.setup('test')
+    trainer.test(model=model, datamodule=dm)
 
 
 def eval(hparams):
-    print(OmegaConf.to_yaml(hparams))
+    print("Evaluating with the following parameters:\n", OmegaConf.to_yaml(hparams))
     evaluator = EvalHelper(hparams)
     evaluator.perform_eval()
 
@@ -108,26 +135,29 @@ def explain(hparams):
     x1_tokenizer = get_tokenizer(hparams.model)
     x2_tokenizer = x1_tokenizer
 
-    code = "def init return true"
-    desc = "inits the app"
-
     x1_length = hparams.data.x1_length
-    x1_length = hparams.data.x2_length
+    x2_length = hparams.data.x2_length
+
+    desc, code = get_sample(
+        hparams.attentions.sample_id,
+        hparams.attentions.dir + hparams.data.name + "_samples.jsonl"
+    )
 
     x1 = x1_tokenizer.encode(text=desc, max_length=x1_length, padding="max_length",
                              truncation=True)
-    x2 = x2_tokenizer.encode(text=code, max_length=x1_length, padding="max_length",
+    x2 = x2_tokenizer.encode(text=code, max_length=x2_length, padding="max_length",
                              truncation=True)
-
-    x1 = torch.tensor([x1])
-    x2 = torch.tensor([x2])
 
     # predict
     model.eval()
 
-    r1_attentions, r2_attentions = model(x1, x2)
+    r1_attentions, r2_attentions = model(torch.tensor([x1]), torch.tensor([x2]))
 
     attentions = {
+        "x1": desc,
+        "x1_tokens": x1_tokenizer.convert_ids_to_tokens(x1),
+        "x2": code,
+        "x2_tokens": x2_tokenizer.convert_ids_to_tokens(x2),
         "r1_attentions": r1_attentions,
         "r2_attentions": r2_attentions
     }
@@ -136,12 +166,13 @@ def explain(hparams):
                  hparams.model.name +
                  "_" +
                  hparams.data.name +
-                 ".pt")
+                 "_attentions.pt")
 
 
 @hydra.main(config_path="configs/", config_name="config.yaml")
 def perform_tasks(hparams):
     os.chdir(hydra.utils.get_original_cwd())
+    hparams = update_hparams(hparams)
 
     if "fit" in hparams.tasks:
         fit(hparams)
@@ -151,6 +182,17 @@ def perform_tasks(hparams):
         eval(hparams)
     if "explain" in hparams.tasks:
         explain(hparams)
+
+
+def update_hparams(hparams):
+    # update predictions
+    hparams.model.predictions.path = f"../resources/predictions/{hparams.model.name}_{hparams.data.name}_predictions.pt"
+
+    # update steps
+    # num_steps = hparams.data.train.num_samples / hparams.data.batch_size
+    # num_epochs = hparams.trainer.max_epochs
+    # hparams.model.steps = num_epochs * num_steps
+    return hparams
 
 
 if __name__ == '__main__':
