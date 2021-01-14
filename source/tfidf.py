@@ -19,8 +19,8 @@ def rank(data_dir):
             descs.append(sample["desc"])
 
     # train vectorizers
-    code_vectorizer = TfidfVectorizer(max_features=20000)
-    desc_vectorizer = TfidfVectorizer(max_features=20000)
+    code_vectorizer = TfidfVectorizer(max_features=50000)
+    desc_vectorizer = TfidfVectorizer(max_features=50000)
     code_vectorizer.fit_transform(codes)
     desc_vectorizer.fit_transform(descs)
 
@@ -82,7 +82,7 @@ def checkpoint_stats(stats, stats_path):
 def eval(data, num_samples, model):
     thresholds = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
     stats = []
-    data_dir = "/home/celso/projects/semantic_code_search/resources/datasets/" + data + "/"
+    data_dir = "../resources/datasets/" + data + "/"
     positions = rank(data_dir)
 
     for k in thresholds:
@@ -104,15 +104,15 @@ def eval(data, num_samples, model):
                 "datasets": data
             }
         )
-    stats_path = "/home/celso/projects/semantic_code_search/resources/stats/" + model + "_" + data + ".stats"
+    stats_path = "../resources/stats/" + model + "_" + data + ".stats"
     checkpoint_stats(stats, stats_path)
 
 
 if __name__ == '__main__':
-    # data="java_v01"
-    # model="TF-IDF"
-    # num_samples = 71892
-    data = "python_v01"
-    model = "TF-IDF"
-    num_samples = 1411
+    data="java_v01"
+    model="TF-IDF"
+    num_samples = 71892
+    # data = "python_v01"
+    # model = "TF-IDF"
+    # num_samples = 1411
     eval(data, num_samples, model)
