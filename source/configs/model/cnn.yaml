@@ -18,7 +18,7 @@ x2_encoder_hparams:
   representation_size: 768
   out_channels: 4000
   kernel_sizes: [ 2, 3, 5 ]
-  sentence_length: 128
+  sentence_length: 64
 
 lr: 1e-7
 

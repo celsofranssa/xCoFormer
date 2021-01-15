@@ -189,10 +189,11 @@ def update_hparams(hparams):
     # update predictions
     hparams.model.predictions.path = f"../resources/predictions/{hparams.model.name}_{hparams.data.name}_predictions.pt"
 
-    # update steps
-    # num_steps = hparams.data.train.num_samples / hparams.data.batch_size
-    # num_epochs = hparams.trainer.max_epochs
-    # hparams.model.steps = num_epochs * num_steps
+    # update interpolation util the nesse update
+    if hparams.model.name == "cnn":
+        hparams.model.x1_encoder_hparams.sentence_length = hparams.data.x1_length
+        hparams.model.x2_encoder_hparams.sentence_length = hparams.data.x2_length
+
     return hparams
 
 
