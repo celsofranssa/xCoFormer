@@ -20,5 +20,5 @@ attentions:
 trainer:
   max_epochs: 100
   patience: 10
-  min_delta: 0.03
+  min_delta: 0.01
   fast_dev_run: False
