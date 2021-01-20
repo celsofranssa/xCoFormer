@@ -40,7 +40,7 @@ class SingleEncoder(LightningModule):
 
     def configure_optimizers(self):
         # optimizers
-        optimizer = torch.optim.Adam(self.x1_encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
+        optimizer = torch.optim.Adam(self.encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
                              weight_decay=0, amsgrad=True)
 
         # schedulers
@@ -81,11 +81,9 @@ class SingleEncoder(LightningModule):
     def test_epoch_end(self, outs):
         self.log('m_test_mrr', self.mrr.compute())
 
-    def get_x1_encoder(self):
-        return self.x1_encoder
+    def get_encoder(self):
+        return self.encoder
 
-    def get_x2_encoder(self):
-        return self.x1_encoder
 
     @property
     def num_training_steps(self) -> int:
