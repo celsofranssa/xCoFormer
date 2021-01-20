@@ -93,6 +93,8 @@ def fit(hparams):
 
 
 def predict(hparams):
+    print("Predicting with the following parameters:\n", OmegaConf.to_yaml(hparams))
+
     # tokenizers
     x1_tokenizer = get_tokenizer(hparams.model)
     x2_tokenizer = x1_tokenizer
