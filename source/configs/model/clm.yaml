@@ -1,14 +1,14 @@
 # @package _group_
 
-name: "codebert"
+name: "codeberta"
 
-x1_encoder: "source.encoder.BertEncoder.BertEncoder"
+x1_encoder: "source.encoder.CLMEncoder.CLMEncoder"
 
 x1_encoder_hparams:
-  architecture: "bert-base-uncased"
+  architecture: "microsoft/codebert-base"
   output_attentions: False
 
-x2_encoder: "source.encoder.CodeBertaEncoder.CodeBertaEncoder"
+x2_encoder: "source.encoder.CLMEncoder.CLMEncoder"
 
 x2_encoder_hparams:
   architecture: "microsoft/codebert-base"
@@ -24,4 +24,4 @@ tokenizer:
   architecture: "microsoft/codebert-base"
 
 predictions:
-  path: "../resources/predictions/codebert_predictions.pt"
+  path: "../resources/predictions/clm_predictions.pt"

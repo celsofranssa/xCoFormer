@@ -5,11 +5,11 @@ from torch import nn
 from source.model.AveragePooling import AveragePooling
 
 
-class RNNEncoder(LightningModule):
+class GRUEncoder(LightningModule):
     """Encodes the input as embeddings."""
 
     def __init__(self, hparams):
-        super(RNNEncoder, self).__init__()
+        super(GRUEncoder, self).__init__()
 
         self.embedding = nn.Embedding(
             num_embeddings=hparams.vocabulary_size,
