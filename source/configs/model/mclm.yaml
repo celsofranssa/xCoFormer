@@ -1,6 +1,6 @@
 # @package _group_
 
-name: "codeberta"
+name: "mclm"
 
 x1_encoder: "source.encoder.MCLMEncoder.MCLMEncoder"
 
