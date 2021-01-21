@@ -48,11 +48,11 @@ class SingleEncoder(LightningModule):
 
         scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer, mode='triangular2', base_lr=1e-7, max_lr=1e-3,
                                               step_size_up=step_size_up, cycle_momentum=False)
-        return optimizer, scheduler
+        return [optimizer], [scheduler]
 
 
 
-    def training_step(self, batch, batch_idx, optimizer_idx):
+    def training_step(self, batch, batch_idx, optimizer_idx=0):
 
         x1, x2 = batch["x1"], batch["x2"]
         r1, r2 = self(x1, x2)
@@ -80,9 +80,6 @@ class SingleEncoder(LightningModule):
 
     def test_epoch_end(self, outs):
         self.log('m_test_mrr', self.mrr.compute())
-
-    def get_encoder(self):
-        return self.encoder
 
 
     @property
