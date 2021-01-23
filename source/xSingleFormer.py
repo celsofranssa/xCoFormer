@@ -16,7 +16,7 @@ from source.DataModule.CodeDescDataModule import CodeDescDataModule
 from source.helper.EvalHelper import EvalHelper
 from source.helper.ExpHelper import get_sample
 from source.model.JointEncoder import JointEncoder
-from source.model.SingleEncoder import SingleEncoder
+from source.model.CrossEncoder import SingleEncoder
 
 
 def get_logger(hparams):

@@ -6,7 +6,7 @@ from pytorch_lightning.core.lightning import LightningModule
 from source.metric.MRRMetric import MRRMetric
 
 
-class SingleEncoder(LightningModule):
+class CrossEncoder(LightningModule):
     """Encodes the code and desc into an same space of embeddings."""
 
     def __init__(self, hparams):
