@@ -15,8 +15,8 @@ from transformers import AutoTokenizer
 from source.DataModule.CodeDescDataModule import CodeDescDataModule
 from source.helper.EvalHelper import EvalHelper
 from source.helper.ExpHelper import get_sample
+from source.model.CrossEncoder import CrossEncoder
 from source.model.JointEncoder import JointEncoder
-from source.model.CrossEncoder import SingleEncoder
 
 
 def get_logger(hparams):
@@ -73,7 +73,7 @@ def fit(hparams):
 
     dm = CodeDescDataModule(hparams.data, x1_tokenizer, x2_tokenizer)
 
-    model = SingleEncoder(hparams.model)
+    model = CrossEncoder(hparams.model)
 
     trainer = Trainer(
         fast_dev_run=hparams.trainer.fast_dev_run,
@@ -191,7 +191,7 @@ def update_hparams(hparams):
     # update predictions
     hparams.model.predictions.path = f"../resources/predictions/{hparams.model.name}_{hparams.data.name}_predictions.pt"
 
-    # update interpolation util the nesse update
+    # update interpolation util the next update
     if hparams.model.name == "cnn":
         hparams.model.x1_encoder_hparams.sentence_length = hparams.data.x1_length
         hparams.model.x2_encoder_hparams.sentence_length = hparams.data.x2_length
