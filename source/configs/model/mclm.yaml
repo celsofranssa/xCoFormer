@@ -14,7 +14,7 @@ x2_encoder_hparams:
   architecture: "microsoft/codebert-base"
   output_attentions: False
 
-lr: 5e-4
+lr: 5e-3
 
 loss: "source.loss.TripletLoss.TripletLoss"
 loss_hparams:

@@ -24,12 +24,14 @@ class JointEncoder(LightningModule):
         # metric
         self.mrr = MRRMetric()
 
-    def get_encoder(self, encoder, encoder_hparams):
+    @staticmethod
+    def get_encoder(encoder, encoder_hparams):
         encoder_module, encoder_class = encoder.rsplit('.', 1)
         encoder_module = importlib.import_module(encoder_module)
         return getattr(encoder_module, encoder_class)(encoder_hparams)
 
-    def get_loss(self, loss, loss_hparams):
+    @staticmethod
+    def get_loss(loss, loss_hparams):
         loss_module, loss_class = loss.rsplit('.', 1)
         loss_module = importlib.import_module(loss_module)
         return getattr(loss_module, loss_class)(loss_hparams)
