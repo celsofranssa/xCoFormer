@@ -41,8 +41,20 @@ class CrossEncoder(LightningModule):
         return r1, r2
 
     def configure_optimizers(self):
-        return torch.optim.Adam(self.encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
+        # optimizers
+        optimizers = [
+            torch.optim.Adam(self.encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
                              weight_decay=0, amsgrad=True)
+        ]
+
+        # schedulers
+        step_size_up = 0.03 * self.num_training_steps
+
+        schedulers = [
+            torch.optim.lr_scheduler.CyclicLR(optimizers[0], mode='triangular2', base_lr=1e-7, max_lr=1e-3,
+                                              step_size_up=step_size_up, cycle_momentum=False)
+        ]
+        return optimizers, schedulers
 
     def training_step(self, batch, batch_idx, optimizer_idx=0):
 
@@ -73,3 +85,10 @@ class CrossEncoder(LightningModule):
     def test_epoch_end(self, outs):
         self.log('m_test_mrr', self.mrr.compute())
 
+    
+    @property
+    def num_training_steps(self) -> int:
+        """Total training steps inferred from datamodule and number of epochs."""
+        steps_per_epochs = len(self.train_dataloader()) / self.trainer.accumulate_grad_batches
+        max_epochs = self.trainer.max_epochs
+        return steps_per_epochs * max_epochs
