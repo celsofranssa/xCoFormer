@@ -18,9 +18,4 @@ class BertEncoder(LightningModule):
 
     def forward(self, features):
         attention_mask = (features > 0).int()
-        hidden_states = self.bert_encoder(features, attention_mask)[0]
-
-        return self.pooling(
-            attention_mask,
-            hidden_states
-        )
+        return self.bert_encoder(features, attention_mask).pooler_output

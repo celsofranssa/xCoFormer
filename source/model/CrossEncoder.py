@@ -44,7 +44,7 @@ class CrossEncoder(LightningModule):
         return torch.optim.Adam(self.encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
                              weight_decay=0, amsgrad=True)
 
-    def training_step(self, batch, batch_idx, optimizer_idx):
+    def training_step(self, batch, batch_idx, optimizer_idx=0):
 
         x1, x2 = batch["x1"], batch["x2"]
         r1, r2 = self(x1, x2)
