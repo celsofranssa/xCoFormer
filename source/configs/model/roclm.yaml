@@ -1,11 +1,11 @@
 # @package _group_
 
-name: "clm"
+name: "roclm"
 
-x1_encoder: "source.encoder.CLMEncoder.CLMEncoder"
+x1_encoder: "source.encoder.RoBERTaEncoder.RoBERTaEncoder"
 
 x1_encoder_hparams:
-  architecture: "microsoft/codebert-base"
+  architecture: "roberta-base"
   output_attentions: False
 
 x2_encoder: "source.encoder.CLMEncoder.CLMEncoder"
@@ -24,4 +24,4 @@ tokenizer:
   architecture: "microsoft/codebert-base"
 
 predictions:
-  path: "../resources/predictions/clm_predictions.pt"
+  path: "../resources/predictions/roclm_predictions.pt"
