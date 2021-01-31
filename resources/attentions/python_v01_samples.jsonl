@@ -1,1 +1,2 @@
 {"id":0,"desc":"sum the elements of the iterable, and return the result as a float","code":"def float_sum(iterable): dcnl dcsp return float(sum(iterable))"}
+{"id":1,"desc":"read samples from file","code":"def load_samples (path): dcnl dcsp samples = [] dcnl dcsp with open(path, 'r') as f dcnl dcsp for data in f dcnl dcsp samples.append(data)  return samples"}
