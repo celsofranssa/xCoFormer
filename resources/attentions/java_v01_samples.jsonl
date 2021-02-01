@@ -1,0 +1,2 @@
+{"id":0,"desc":"calculates the factorial of an integer", "code":"public int factorial (int n) { if (n == 1) { return 1; } return n * factorial (n - 1); }"}
+{"id":1,"desc":"checks if a target number is present in the list of integers", "code":"public boolean contains ( List <Integer> numbers, Integer target ) { for ( Integer number: numbers ) { if  (number.equals ( target ) ) { return true; } } return false; }"}
