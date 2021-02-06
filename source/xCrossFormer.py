@@ -16,7 +16,7 @@ from source.DataModule.CodeDescDataModule import CodeDescDataModule
 from source.helper.EvalHelper import EvalHelper
 from source.helper.ExpHelper import get_sample
 from source.model.CrossEncoder import CrossEncoder
-from source.model.JointEncoder import JointEncoder
+
 
 
 def get_logger(hparams):
@@ -103,7 +103,7 @@ def predict(hparams):
     dm = CodeDescDataModule(hparams.data, x1_tokenizer, x2_tokenizer)
 
     # model
-    model = JointEncoder.load_from_checkpoint(
+    model = CrossEncoder.load_from_checkpoint(
         checkpoint_path=hparams.model_checkpoint.dir + hparams.model.name + "_" + hparams.data.name + ".ckpt"
     )
 
@@ -129,7 +129,7 @@ def eval(hparams):
 def explain(hparams):
     print("using the following parameters:\n", OmegaConf.to_yaml(hparams))
     # override some of the params with new values
-    model = JointEncoder.load_from_checkpoint(
+    model = CrossEncoder.load_from_checkpoint(
         checkpoint_path=hparams.model_checkpoint.dir + hparams.model.name + "_" + hparams.data.name + ".ckpt",
         **hparams.model
     )

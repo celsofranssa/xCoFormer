@@ -1,14 +1,14 @@
 # @package _group_
 
-name: "codeberta"
+name: "codebert"
 
-x1_encoder: "source.encoder.CodeBertaEncoder.CodeBertaEncoder"
+x1_encoder: "source.encoder.CodeBertEncoder.CodeBertEncoder"
 
 x1_encoder_hparams:
   architecture: "microsoft/codebert-base"
   output_attentions: False
 
-x2_encoder: "source.encoder.CodeBertaEncoder.CodeBertaEncoder"
+x2_encoder: "source.encoder.CodeBertEncoder.CodeBertEncoder"
 
 x2_encoder_hparams:
   architecture: "microsoft/codebert-base"
@@ -16,12 +16,12 @@ x2_encoder_hparams:
 
 lr: 1e-7
 
-loss: "source.loss.NPairsLoss.NPairsLoss"
+loss: "source.loss.TripletLoss.TripletLoss"
 loss_hparams:
-  name: "NPairsLoss"
+  name: "TripletLoss"
 
 tokenizer:
   architecture: "microsoft/codebert-base"
 
 predictions:
-  path: "../resources/predictions/codeberta_predictions.pt"
+  path: "../resources/predictions/codebert_predictions.pt"
