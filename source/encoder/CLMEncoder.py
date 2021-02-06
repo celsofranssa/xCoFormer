@@ -1,6 +1,8 @@
 from pytorch_lightning import LightningModule
 from transformers import RobertaModel
 
+from source.model.AveragePooling import AveragePooling
+
 
 class CLMEncoder(LightningModule):
     """Encodes the input as embeddings."""
@@ -11,6 +13,7 @@ class CLMEncoder(LightningModule):
             hparams.architecture,
             output_attentions=hparams.output_attentions
         )
+        self.pooling = AveragePooling()
 
     def forward(self, features):
         attention_mask = (features != 1).int()
