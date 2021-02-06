@@ -7,11 +7,16 @@ class CLMEncoder(LightningModule):
 
     def __init__(self, hparams):
         super(CLMEncoder, self).__init__()
-        self.codeberta_encoder = RobertaModel.from_pretrained(
+        self.encoder = RobertaModel.from_pretrained(
             hparams.architecture,
             output_attentions=hparams.output_attentions
         )
 
     def forward(self, features):
         attention_mask = (features != 1).int()
-        return self.codeberta_encoder(features, attention_mask).pooler_output
+        hidden_states = self.encoder(features, attention_mask).last_hidden_state
+
+        return self.pooling(
+            attention_mask,
+            hidden_states
+        )
