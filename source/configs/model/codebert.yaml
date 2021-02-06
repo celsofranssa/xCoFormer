@@ -14,11 +14,11 @@ x2_encoder_hparams:
   architecture: "microsoft/codebert-base"
   output_attentions: False
 
-lr: 1e-7
+lr: 5e-4
 
-loss: "source.loss.NPairsLoss.NPairsLoss"
+loss: "source.loss.TripletLoss.TripletLoss"
 loss_hparams:
-  name: "NPairsLoss"
+  name: "TripletLoss"
 
 tokenizer:
   architecture: "microsoft/codebert-base"

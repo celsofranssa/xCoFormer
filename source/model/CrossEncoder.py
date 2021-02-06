@@ -51,7 +51,7 @@ class CrossEncoder(LightningModule):
         step_size_up = 0.03 * self.num_training_steps
 
         schedulers = [
-            torch.optim.lr_scheduler.CyclicLR(optimizers[0], mode='triangular2', base_lr=1e-7, max_lr=1e-3,
+            torch.optim.lr_scheduler.CyclicLR(optimizers[0], mode='triangular2', base_lr=self.hparams.lr, max_lr=1e-3,
                                               step_size_up=step_size_up, cycle_momentum=False)
         ]
         return optimizers, schedulers

@@ -6,4 +6,4 @@ omegaconf~=2.0.2
 numpy~=1.19.5
 tensorboard~=2.4.0
 tqdm~=4.54.0
-nmslib~=2.0.9
+nmslib

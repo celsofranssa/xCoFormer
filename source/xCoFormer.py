@@ -172,6 +172,41 @@ def explain(hparams):
                  "_attentions.pt")
 
 
+def sim(hparams):
+    print("using the following parameters:\n", OmegaConf.to_yaml(hparams))
+    # override some of the params with new values
+    model = JointEncoder.load_from_checkpoint(
+        checkpoint_path=hparams.model_checkpoint.dir + hparams.model.name + "_" + hparams.data.name + ".ckpt",
+        **hparams.model
+    )
+
+    # tokenizers
+    x1_tokenizer = get_tokenizer(hparams.model)
+    x2_tokenizer = x1_tokenizer
+
+    x1_length = hparams.data.x1_length
+    x2_length = hparams.data.x2_length
+
+    desc, code = get_sample(
+        hparams.attentions.sample_id,
+        hparams.attentions.dir + hparams.data.name + "_samples.jsonl"
+    )
+
+    x1 = x1_tokenizer.encode(text=desc, max_length=x1_length, padding="max_length",
+                             truncation=True)
+    x2 = x2_tokenizer.encode(text=code, max_length=x2_length, padding="max_length",
+                             truncation=True)
+
+    # predict
+    model.eval()
+
+    r1, r2 = model(torch.tensor([x1]), torch.tensor([x2]))
+    cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
+    print(cos(r1, r2))
+
+
+
+
 @hydra.main(config_path="configs/", config_name="config.yaml")
 def perform_tasks(hparams):
     os.chdir(hydra.utils.get_original_cwd())
@@ -185,6 +220,8 @@ def perform_tasks(hparams):
         eval(hparams)
     if "explain" in hparams.tasks:
         explain(hparams)
+    if "sim" in hparams.tasks:
+        sim(hparams)
 
 
 def update_hparams(hparams):
