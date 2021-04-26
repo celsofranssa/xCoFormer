@@ -104,7 +104,7 @@ class EvalHelper:
                 {
                     "k": k,
                     "metric": "MRR",
-                    "value": self.mrr_at_k(positions, k, self.hparams.data.test.num_samples),
+                    "value": self.mrr_at_k(positions, k, self.hparams.data.num_test_samples),
                     "model": self.hparams.model.name,
                     "datasets": self.hparams.data.name
                 }
@@ -113,7 +113,7 @@ class EvalHelper:
                 {
                     "k": k,
                     "metric": "Recall",
-                    "value": self.recall_at_k(positions, k, self.hparams.data.test.num_samples),
+                    "value": self.recall_at_k(positions, k, self.hparams.data.num_test_samples),
                     "model": self.hparams.model.name,
                     "datasets": self.hparams.data.name
                 }
