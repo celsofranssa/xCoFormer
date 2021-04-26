@@ -15,7 +15,7 @@ class CrossEncoder(LightningModule):
         self.hparams = hparams
 
         # encoders
-        self.encoder = self.get_encoder(hparams.x1_encoder, hparams.x1_encoder_hparams)
+        self.encoder = self.get_encoder(hparams.desc_encoder, hparams.x1_encoder_hparams)
 
         # loss function
         self.loss_fn = self.get_loss(hparams.loss, hparams.loss_hparams)

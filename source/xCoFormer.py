@@ -15,7 +15,7 @@ from transformers import AutoTokenizer
 from source.DataModule.CodeDescDataModule import CodeDescDataModule
 from source.helper.EvalHelper import EvalHelper
 from source.helper.ExpHelper import get_sample
-from source.model.JointEncoder import JointEncoder
+from source.model.CoEncoder import CoEncoder
 
 
 def get_logger(hparams):
@@ -67,12 +67,12 @@ def fit(hparams):
     early_stopping_callback = get_early_stopping_callback(hparams.trainer)
 
     # tokenizers
-    x1_tokenizer = get_tokenizer(hparams.model)
-    x2_tokenizer = x1_tokenizer
+    desc_tokenizer = get_tokenizer(hparams.model)
+    code_tokenizer = get_tokenizer(hparams.model)
 
-    dm = CodeDescDataModule(hparams.data, x1_tokenizer, x2_tokenizer)
+    dm = CodeDescDataModule(hparams.data, desc_tokenizer, code_tokenizer)
 
-    model = JointEncoder(hparams.model)
+    model = CoEncoder(hparams.model)
 
     trainer = Trainer(
         fast_dev_run=hparams.trainer.fast_dev_run,
@@ -87,10 +87,6 @@ def fit(hparams):
     dm.setup('fit')
     trainer.fit(model, datamodule=dm)
 
-    # testing
-    dm.setup('test')
-    trainer.test(model, datamodule=dm)
-
 
 def predict(hparams):
     print("Predicting with the following parameters:\n", OmegaConf.to_yaml(hparams))
@@ -103,7 +99,7 @@ def predict(hparams):
     dm = CodeDescDataModule(hparams.data, x1_tokenizer, x2_tokenizer)
 
     # model
-    model = JointEncoder.load_from_checkpoint(
+    model = CoEncoder.load_from_checkpoint(
         checkpoint_path=hparams.model_checkpoint.dir + hparams.model.name + "_" + hparams.data.name + ".ckpt"
     )
 
@@ -129,7 +125,7 @@ def eval(hparams):
 def explain(hparams):
     print("using the following parameters:\n", OmegaConf.to_yaml(hparams))
     # override some of the params with new values
-    model = JointEncoder.load_from_checkpoint(
+    model = CoEncoder.load_from_checkpoint(
         checkpoint_path=hparams.model_checkpoint.dir + hparams.model.name + "_" + hparams.data.name + ".ckpt",
         **hparams.model
     )
@@ -175,7 +171,7 @@ def explain(hparams):
 def sim(hparams):
     print("using the following parameters:\n", OmegaConf.to_yaml(hparams))
     # override some of the params with new values
-    model = JointEncoder.load_from_checkpoint(
+    model = CoEncoder.load_from_checkpoint(
         checkpoint_path=hparams.model_checkpoint.dir + hparams.model.name + "_" + hparams.data.name + ".ckpt",
         **hparams.model
     )
