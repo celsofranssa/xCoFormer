@@ -19,7 +19,7 @@ def get_dataloader(cfg):
     tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
 
     dataset = CodeSearchDataset(
-        path=cfg.dataset.test_path,
+        data_path=cfg.dataset.test_path,
         tokenizer=tokenizer,
         max_length=cfg.preprocessing.max_length)
 

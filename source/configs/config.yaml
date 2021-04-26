@@ -1,6 +1,6 @@
 defaults:
   - model: bert
-  - data: python_v01
+  - data: CodeXGLUE_v01
 
 log:
   dir: "../resources/logs/"

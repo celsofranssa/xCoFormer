@@ -1,0 +1,15 @@
+# @package _group_
+
+name: "CodeXGLUE_v01"
+
+dir: "../resources/datasets/CodeXGLUE_v01/"
+
+num_train_samples: 246807
+num_test_samples: 18856
+num_val_samples: 9416
+
+desc_max_length: 32
+code_max_length: 128
+
+batch_size: 16
+num_workers: 64
