@@ -73,10 +73,10 @@ class CrossEncoder(LightningModule):
         self.log('m_val_mrr', self.mrr.compute())
 
     def test_step(self, batch, batch_idx):
-        id, x1, x2 = batch["id"], batch["x1"], batch["x2"]
-        r1, r2 = self(x1, x2)
+        idx, desc, code = batch["idx"], batch["desc"], batch["code"]
+        r1, r2 = self(desc, code)
         self.write_prediction_dict({
-            "id": id,
+            "idx": id,
             "r1": r1,
             "r2": r2
         }, self.hparams.predictions.path)

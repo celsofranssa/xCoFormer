@@ -28,6 +28,15 @@ class EvalHelper:
 
         return rrank / num_samples
 
+    def mrr(self, ranking):
+        """
+        Evaluates the MMR considering only the positions up to k.
+        :param positions:
+        :param num_samples:
+        :return:
+        """
+        return np.mean(ranking)
+
     def recall_at_k(self, positions, k, num_samples):
         """
         Evaluates the Recall considering only the positions up to k
@@ -45,66 +54,50 @@ class EvalHelper:
 
     def load_predictions(self):
         # load predictions
-        predictions = torch.load(self.hparams.model.predictions.path)
+        return torch.load(self.hparams.model.predictions.path)
 
-        descs = []
-        codes = []
-
-        for prediction in predictions:
-            descs.append(prediction["r1"])
-            codes.append(prediction["r2"])
-
-        return descs, codes
-
-    def init_index(self, codes):
+    def init_index(self, predictions):
         # initialize a new index, using a HNSW index on Cosine Similarity
         index = nmslib.init(method='hnsw', space='cosinesimil')
-        index.addDataPointBatch(codes)
+
+        for prediction in predictions:
+            index.addDataPoint(id=prediction["idx"], data=prediction["r2"])
+
         index.createIndex()
         return index
 
-    def retrieve(self, index, descs, k=100):
+    def retrieve(self, index, predictions, k=100):
         # retrieve
+        ranking = []
+        for prediction in predictions:
+            target_idx = prediction["idx"]
+            ids, distances = index.knnQuery(prediction["r1"], k=k)
+            if target_idx in ids:
+                ranking.append(ids.index(target_idx) + 1)
+            else:
+                ranking.append(1e9)
+        return ranking
 
-        neighbours = index.knnQueryBatch(descs, k=k)
-
-        r_rank = []
-        positions = []
-        index_error = 0
-
-        for qid, neighbour in enumerate(neighbours):
-            rids, distances = neighbour
-            try:
-                p = np.where(rids == qid)[0][0]
-                positions.append(p + 1)
-                r_rank.append(1.0 / (p + 1))
-            except:
-                index_error += 1
-
-        print("Out of Rank: ", index_error)
-        print("MRR: ", mean(r_rank))
-        return positions
-
-    def rank(self):
+    def get_ranking(self):
 
         # load predictions
-        descs, codes = self.load_predictions()
+        predictions = self.load_predictions()
 
-        index = self.init_index(codes)
+        index = self.init_index(predictions)
 
-        return self.retrieve(index, descs)
+        return self.retrieve(index, predictions)
 
     def perform_eval(self):
         thresholds = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
         stats = []
-        positions = self.rank()
+        ranking = self.get_ranking()
 
         for k in thresholds:
             stats.append(
                 {
                     "k": k,
                     "metric": "MRR",
-                    "value": self.mrr_at_k(positions, k, self.hparams.data.test.num_samples),
+                    "value": self.mrr_at_k(ranking, k, self.hparams.data.test.num_samples),
                     "model": self.hparams.model.name,
                     "datasets": self.hparams.data.name
                 }
@@ -113,10 +106,12 @@ class EvalHelper:
                 {
                     "k": k,
                     "metric": "Recall",
-                    "value": self.recall_at_k(positions, k, self.hparams.data.test.num_samples),
+                    "value": self.recall_at_k(ranking, k, self.hparams.data.test.num_samples),
                     "model": self.hparams.model.name,
                     "datasets": self.hparams.data.name
                 }
             )
+        print(self.mrr(ranking))
+
         stats_path = self.hparams.stats.dir + self.hparams.model.name + "_" + self.hparams.data.name + ".stats"
         self.checkpoint_stats(stats, stats_path)
