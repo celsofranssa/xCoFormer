@@ -4,12 +4,12 @@ name: "CodeXGLUE_v01"
 
 dir: "../resources/datasets/CodeXGLUE_v01/"
 
-num_train_samples: 246807
-num_test_samples: 18856
-num_val_samples: 9416
+num_train_samples: 251820
+num_test_samples: 19210
+num_val_samples: 9604
 
 desc_max_length: 32
-code_max_length: 128
+code_max_length: 320
 
 batch_size: 16
 num_workers: 64
