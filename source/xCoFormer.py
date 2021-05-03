@@ -77,6 +77,7 @@ def fit(hparams):
     trainer = Trainer(
         fast_dev_run=hparams.trainer.fast_dev_run,
         max_epochs=hparams.trainer.max_epochs,
+        precision=hparams.trainer.precision,
         gpus=1,
         enable_pl_optimizer=True,
         logger=tb_logger,

@@ -21,4 +21,5 @@ trainer:
   max_epochs: 16
   patience: 3
   min_delta: 0.03
+  precision: 16
   fast_dev_run: False
