@@ -13,6 +13,9 @@ tasks: [ "fit" ]
 stats:
   dir: "../resources/stats/"
 
+rankings:
+  dir: "../resources/rankings/"
+
 attentions:
   dir: "../resources/attentions/"
   sample_id: 0

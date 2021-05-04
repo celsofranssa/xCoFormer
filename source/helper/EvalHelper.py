@@ -52,13 +52,18 @@ class EvalHelper:
             for data in stats:
                 stats_file.write(f"{json.dumps(data)}\n")
 
+    def checkpoint_ranking(self, ranking, ranking_path):
+        with open(ranking_path, "w") as ranking_file:
+            for data in ranking:
+                ranking_file.write(f"{json.dumps(data)}\n")
+
     def load_predictions(self):
         # load predictions
         return torch.load(self.hparams.model.predictions.path)
 
     def init_index(self, predictions):
         # initialize a new index, using a HNSW index on Cosine Similarity
-        index = nmslib.init(method='hnsw', space='cosinesimil')
+        index = nmslib.init(method='brute_force', space='cosinesimil')
 
         for prediction in predictions:
             index.addDataPoint(id=prediction["idx"], data=prediction["r2"])
@@ -68,15 +73,18 @@ class EvalHelper:
 
     def retrieve(self, index, predictions, k=100):
         # retrieve
-        ranking = []
+        relevant_position = []
+        rankings = []
         for prediction in predictions:
             target_idx = prediction["idx"]
             ids, distances = index.knnQuery(prediction["r1"], k=k)
+            ids = ids.tolist()
+            rankings.append({"idx": target_idx, "ranking": ids})
             if target_idx in ids:
-                ranking.append(ids.index(target_idx) + 1)
+                relevant_position.append(ids.index(target_idx) + 1)
             else:
-                ranking.append(1e9)
-        return ranking
+                relevant_position.append(1e9)
+        return relevant_position, rankings
 
     def get_ranking(self):
 
@@ -85,19 +93,19 @@ class EvalHelper:
 
         index = self.init_index(predictions)
 
-        return self.retrieve(index, predictions)
+        return self.retrieve(index, predictions, k=self.hparams.data.num_test_samples)
 
     def perform_eval(self):
         thresholds = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
         stats = []
-        ranking = self.get_ranking()
+        relevant_position, ranking = self.get_ranking()
 
         for k in thresholds:
             stats.append(
                 {
                     "k": k,
                     "metric": "MRR",
-                    "value": self.mrr_at_k(ranking, k, self.hparams.data.test.num_samples),
+                    "value": self.mrr_at_k(relevant_position, k, self.hparams.data.num_test_samples),
                     "model": self.hparams.model.name,
                     "datasets": self.hparams.data.name
                 }
@@ -106,12 +114,15 @@ class EvalHelper:
                 {
                     "k": k,
                     "metric": "Recall",
-                    "value": self.recall_at_k(ranking, k, self.hparams.data.test.num_samples),
+                    "value": self.recall_at_k(relevant_position, k, self.hparams.data.num_test_samples),
                     "model": self.hparams.model.name,
                     "datasets": self.hparams.data.name
                 }
             )
-        print(self.mrr(ranking))
+        print(self.mrr(relevant_position))
 
         stats_path = self.hparams.stats.dir + self.hparams.model.name + "_" + self.hparams.data.name + ".stats"
+        ranking_path = self.hparams.rankings.dir + self.hparams.model.name + "_" + self.hparams.data.name + ".ranking"
+
         self.checkpoint_stats(stats, stats_path)
+        self.checkpoint_ranking(ranking, ranking_path)
