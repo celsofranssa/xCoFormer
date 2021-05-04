@@ -2,20 +2,22 @@
 
 name: "roberta"
 
-x1_encoder: "source.encoder.RoBERTaEncoder.RoBERTaEncoder"
+desc_encoder: "source.encoder.RoBERTaEncoder.RoBERTaEncoder"
 
-x1_encoder_hparams:
+desc_encoder_hparams:
   architecture: "roberta-base"
 
-x2_encoder: "source.encoder.RoBERTaEncoder.RoBERTaEncoder"
+code_encoder: "source.encoder.RoBERTaEncoder.RoBERTaEncoder"
 
-x2_encoder_hparams:
+code_encoder_hparams:
   architecture: "roberta-base"
 
 tokenizer:
   architecture: "roberta-base"
 
-lr: 1e-7
+lr: 1e-5
+base_lr: 1e-7
+max_lr: 1e-3
 
 loss: "source.loss.NPairsLoss.NPairsLoss"
 loss_hparams:

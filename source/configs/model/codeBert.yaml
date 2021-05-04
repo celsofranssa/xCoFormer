@@ -2,19 +2,21 @@
 
 name: "codebert"
 
-x1_encoder: "source.encoder.CodeBertEncoder.CodeBertEncoder"
+desc_encoder: "source.encoder.CodeBertEncoder.CodeBertEncoder"
 
-x1_encoder_hparams:
+desc_encoder_hparams:
   architecture: "microsoft/codebert-base"
   output_attentions: False
 
-x2_encoder: "source.encoder.CodeBertEncoder.CodeBertEncoder"
+code_encoder: "source.encoder.CodeBertEncoder.CodeBertEncoder"
 
-x2_encoder_hparams:
+code_encoder_hparams:
   architecture: "microsoft/codebert-base"
   output_attentions: False
 
-lr: 1e-7
+lr: 1e-5
+base_lr: 1e-7
+max_lr: 1e-3
 
 loss: "source.loss.TripletLoss.TripletLoss"
 loss_hparams:

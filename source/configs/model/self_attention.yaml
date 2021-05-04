@@ -2,23 +2,25 @@
 
 name: "self_attention"
 
-x1_encoder: "source.encoder.SelfAttentionEncoder.SelfAttentionEncoder"
+desc_encoder: "source.encoder.SelfAttentionEncoder.SelfAttentionEncoder"
 
-x1_encoder_hparams:
+desc_encoder_hparams:
   vocabulary_size: 50000
   representation_size: 768
   num_heads: 12
   dropout: 0.1
 
-x2_encoder: "source.encoder.SelfAttentionEncoder.SelfAttentionEncoder"
+code_encoder: "source.encoder.SelfAttentionEncoder.SelfAttentionEncoder"
 
-x2_encoder_hparams:
+code_encoder_hparams:
   vocabulary_size: 50000
   representation_size: 768
   num_heads: 12
   dropout: 0.1
 
-lr: 1e-7
+lr: 1e-5
+base_lr: 1e-7
+max_lr: 1e-3
 
 loss: "source.loss.TripletLoss.TripletLoss"
 loss_hparams:

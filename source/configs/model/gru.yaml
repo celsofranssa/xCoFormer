@@ -16,7 +16,9 @@ code_encoder_hparams:
   representation_size: 768
   hidden_size: 768
 
-lr: 1e-7
+lr: 1e-5
+base_lr: 1e-7
+max_lr: 1e-3
 
 loss: "source.loss.NPairsLoss.NPairsLoss"
 loss_hparams:
