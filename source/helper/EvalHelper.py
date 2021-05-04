@@ -54,8 +54,7 @@ class EvalHelper:
 
     def checkpoint_ranking(self, ranking, ranking_path):
         with open(ranking_path, "w") as ranking_file:
-            for data in ranking:
-                ranking_file.write(f"{json.dumps(data)}\n")
+            ranking_file.write(f"{ranking}\n")
 
     def load_predictions(self):
         # load predictions
@@ -73,18 +72,16 @@ class EvalHelper:
 
     def retrieve(self, index, predictions, k=100):
         # retrieve
-        relevant_position = []
-        rankings = []
+        ranking = []
         for prediction in predictions:
             target_idx = prediction["idx"]
             ids, distances = index.knnQuery(prediction["r1"], k=k)
             ids = ids.tolist()
-            rankings.append({"idx": target_idx, "ranking": ids})
             if target_idx in ids:
-                relevant_position.append(ids.index(target_idx) + 1)
+                ranking.append(ids.index(target_idx) + 1)
             else:
-                relevant_position.append(1e9)
-        return relevant_position, rankings
+                ranking.append(1e9)
+        return ranking
 
     def get_ranking(self):
 
@@ -98,14 +95,14 @@ class EvalHelper:
     def perform_eval(self):
         thresholds = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
         stats = []
-        relevant_position, ranking = self.get_ranking()
+        ranking = self.get_ranking()
 
         for k in thresholds:
             stats.append(
                 {
                     "k": k,
                     "metric": "MRR",
-                    "value": self.mrr_at_k(relevant_position, k, self.hparams.data.num_test_samples),
+                    "value": self.mrr_at_k(ranking, k, self.hparams.data.num_test_samples),
                     "model": self.hparams.model.name,
                     "datasets": self.hparams.data.name
                 }
@@ -114,12 +111,12 @@ class EvalHelper:
                 {
                     "k": k,
                     "metric": "Recall",
-                    "value": self.recall_at_k(relevant_position, k, self.hparams.data.num_test_samples),
+                    "value": self.recall_at_k(ranking, k, self.hparams.data.num_test_samples),
                     "model": self.hparams.model.name,
                     "datasets": self.hparams.data.name
                 }
             )
-        print(self.mrr(relevant_position))
+        print(self.mrr(ranking))
 
         stats_path = self.hparams.stats.dir + self.hparams.model.name + "_" + self.hparams.data.name + ".stats"
         ranking_path = self.hparams.rankings.dir + self.hparams.model.name + "_" + self.hparams.data.name + ".ranking"

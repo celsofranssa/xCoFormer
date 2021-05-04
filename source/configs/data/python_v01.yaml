@@ -2,19 +2,14 @@
 
 name: "python_v01"
 
-train:
-  path: "../resources/datasets/python_v01/train.jsonl"
-  num_samples: 75614
+dir: "../resources/datasets/python_v01/"
 
-test:
-  path: "../resources/datasets/python_v01/test.jsonl"
-  num_samples: 1411
+num_train_samples: 75614
+num_test_samples: 1411
+num_val_samples: 1364
 
-val:
-  path: "../resources/datasets/python_v01/val.jsonl"
-  num_samples: 1364
+desc_max_length: 16
+code_max_length: 128
 
 batch_size: 16
 num_workers: 64
-x1_length: 16
-x2_length: 128
