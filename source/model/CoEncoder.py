@@ -36,15 +36,14 @@ class CoEncoder(LightningModule):
         loss_module = importlib.import_module(loss_module)
         return getattr(loss_module, loss_class)(loss_hparams)
 
-
-
     def configure_optimizers(self):
+
         # optimizers
         optimizers = [
-            torch.optim.Adam(self.desc_encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
-                             weight_decay=0, amsgrad=True),
-            torch.optim.Adam(self.code_encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
-                             weight_decay=0, amsgrad=True)
+            torch.optim.AdamW(self.desc_encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
+                             weight_decay=self.hparams.weight_decay, amsgrad=True),
+            torch.optim.AdamW(self.code_encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
+                             weight_decay=self.hparams.weight_decay, amsgrad=True)
         ]
 
         # schedulers
@@ -68,30 +67,18 @@ class CoEncoder(LightningModule):
         ]
         return optimizers, schedulers
 
-    # def optimizer_step(self, epoch, batch_idx, optimizer, optimizer_idx, optimizer_closure, on_tpu,
-    #                    using_native_amp, using_lbfgs):
-    #
-    #     # update x1 opt every even steps
-    #     if optimizer_idx == 0:
-    #         if batch_idx % 2 == 0:
-    #             optimizer.step(closure=optimizer_closure)
-    #
-    #     # update x2 opt every odd steps
-    #     if optimizer_idx == 1:
-    #         if batch_idx % 2 != 0:
-    #             optimizer.step(closure=optimizer_closure)
+    def optimizer_step(self, epoch, batch_idx, optimizer, optimizer_idx, optimizer_closure, on_tpu,
+                       using_native_amp, using_lbfgs):
 
-    def optimizer_step(self, current_epoch, batch_nb, optimizer, optimizer_idx, closure, on_tpu=False,
-                       using_native_amp=False, using_lbfgs=False):
-        # update generator opt every 2 steps
+        # update desc optimizer every even steps
         if optimizer_idx == 0:
-            if batch_nb % 2 == 0:
-                optimizer.step(closure=closure)
+            if batch_idx % 2 == 0:
+                optimizer.step(closure=optimizer_closure)
 
-        # update discriminator opt every 4 steps
+        # update code optimizer every odd steps
         if optimizer_idx == 1:
-            if batch_nb % 2 != 0:
-                optimizer.step(closure=closure)
+            if batch_idx % 2 != 0:
+                optimizer.step(closure=optimizer_closure)
 
     def forward(self, desc, code):
         r1 = self.desc_encoder(desc)

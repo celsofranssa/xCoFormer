@@ -1,8 +1,6 @@
 from pytorch_lightning import LightningModule
 from transformers import RobertaModel
 
-from source.model.AveragePooling import AveragePooling
-
 
 class MCLMEncoder(LightningModule):
     """Encodes the input as embeddings."""

@@ -2,7 +2,7 @@ import torch.nn
 from pytorch_lightning import LightningModule
 from torch import nn
 
-from source.model.AveragePooling import AveragePooling
+from source.pooling.AveragePooling import AveragePooling
 
 
 class GRUEncoder(LightningModule):

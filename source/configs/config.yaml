@@ -1,5 +1,5 @@
 defaults:
-  - model: bert
+  - model: CLM
   - data: CodeXGLUE_v01
 
 log:

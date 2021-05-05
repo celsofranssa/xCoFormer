@@ -1,8 +1,7 @@
-from omegaconf import OmegaConf
 from pytorch_lightning import LightningModule
 from transformers import XLNetModel
 
-from source.model.AveragePooling import AveragePooling
+from source.pooling.AveragePooling import AveragePooling
 
 
 class XLNetEncoder(LightningModule):

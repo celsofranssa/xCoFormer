@@ -2,8 +2,7 @@ import torch.nn
 from pytorch_lightning import LightningModule
 from torch import nn
 
-from source.model.AveragePooling import AveragePooling
-from source.model.MaxPooling import MaxPooling
+from source.pooling.MaxPooling import MaxPooling
 
 
 class LSTMEncoder(LightningModule):

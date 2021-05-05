@@ -2,15 +2,24 @@
 
 name: "CLM"
 
-desc_encoder: "source.encoder.CodeBertEncoder.CodeBertEncoder"
+desc_encoder: "source.encoder.CLMEncoder.CLMEncoder"
 desc_encoder_hparams:
   architecture: "microsoft/codebert-base"
   output_attentions: False
+  pooling: "source.pooling.AttentivePooling.AttentivePooling"
+  pooling_hparams:
+    hidden_size: 768
+    max_length: ${data.desc_max_length}
 
-code_encoder: "source.encoder.CodeBertEncoder.CodeBertEncoder"
+
+code_encoder: "source.encoder.CLMEncoder.CLMEncoder"
 code_encoder_hparams:
   architecture: "microsoft/codebert-base"
   output_attentions: False
+  pooling: "source.pooling.AttentivePooling.AttentivePooling"
+  pooling_hparams:
+    hidden_size: 768
+    max_length: ${data.code_max_length}
 
 lr: 1e-5
 base_lr: 1e-7
@@ -24,4 +33,4 @@ tokenizer:
   architecture: "microsoft/codebert-base"
 
 predictions:
-  path: "../resources/predictions/clm_predictions.pt"
+  path: "../resources/predictions/clm_${data.name}predictions.pt"

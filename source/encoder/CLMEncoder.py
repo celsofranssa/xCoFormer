@@ -1,7 +1,8 @@
+import importlib
+
 from pytorch_lightning import LightningModule
 from transformers import RobertaModel
 
-from source.model.AveragePooling import AveragePooling
 
 
 class CLMEncoder(LightningModule):
@@ -13,13 +14,19 @@ class CLMEncoder(LightningModule):
             hparams.architecture,
             output_attentions=hparams.output_attentions
         )
-        self.pooling = AveragePooling()
+        self.pooling = self.get_pooling(hparams.pooling, hparams.pooling_hparams)
+
+    @staticmethod
+    def get_pooling(pooling, pooling_hparams):
+        pooling_module, pooling_class = pooling.rsplit('.', 1)
+        pooling_module = importlib.import_module(pooling_module)
+        return getattr(pooling_module, pooling_class)(pooling_hparams)
 
     def forward(self, features):
         attention_mask = (features != 1).int()
-        hidden_states = self.encoder(features, attention_mask).last_hidden_state
+        encoder_outputs = self.encoder(features, attention_mask)
 
         return self.pooling(
             attention_mask,
-            hidden_states
+            encoder_outputs
         )
