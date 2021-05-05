@@ -24,6 +24,7 @@ code_encoder_hparams:
 lr: 1e-5
 base_lr: 1e-7
 max_lr: 1e-3
+weight_decay: 1e-2
 
 loss: "source.loss.NPairsLoss.NPairsLoss"
 loss_hparams:
