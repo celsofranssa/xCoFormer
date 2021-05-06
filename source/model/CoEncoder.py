@@ -67,30 +67,21 @@ class CoEncoder(LightningModule):
         ]
         return optimizers, schedulers
 
-    # def optimizer_step(self, epoch, batch_idx, optimizer, optimizer_idx, optimizer_closure, on_tpu,
-    #                    using_native_amp, using_lbfgs):
-    #
-    #     # update desc optimizer every even steps
-    #     if optimizer_idx == 0:
-    #         if batch_idx % 2 == 0:
-    #             optimizer.step(closure=optimizer_closure)
-    #
-    #     # update code optimizer every odd steps
-    #     if optimizer_idx == 1:
-    #         if batch_idx % 2 != 0:
-    #             optimizer.step(closure=optimizer_closure)
-
-    def optimizer_step(self, current_epoch, batch_nb, optimizer, optimizer_idx, closure, on_tpu=False,
-                       using_native_amp=False, using_lbfgs=False):
-        # update generator opt every 2 steps
+    # Alternating schedule for optimizer steps (e.g. GANs)
+    def optimizer_step(
+            self, epoch, batch_idx, optimizer, optimizer_idx, optimizer_closure,
+            on_tpu, using_native_amp, using_lbfgs
+    ):
+        # update generator every step
         if optimizer_idx == 0:
-            if batch_nb % 2 == 0:
-                optimizer.step(closure=closure)
+            if batch_idx % 2 == 0:
+                optimizer.step(closure=optimizer_closure)
 
-        # update discriminator opt every 4 steps
+        # update discriminator every 2 steps
         if optimizer_idx == 1:
-            if batch_nb % 2 != 0:
-                optimizer.step(closure=closure)
+            if batch_idx % 2 != 0:
+                optimizer.step(closure=optimizer_closure)
+
 
     def forward(self, desc, code):
         r1 = self.desc_encoder(desc)
@@ -98,7 +89,6 @@ class CoEncoder(LightningModule):
         return r1, r2
 
     def training_step(self, batch, batch_idx, optimizer_idx):
-
         desc, code = batch["desc"], batch["code"]
         r1, r2 = self(desc, code)
         train_loss = self.loss(r1, r2)
