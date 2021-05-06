@@ -22,7 +22,7 @@ attentions:
 
 trainer:
   max_epochs: 16
-  patience: 3
-  min_delta: 0.03
+  patience: 7
+  min_delta: 0.01
   precision: 16
   fast_dev_run: False

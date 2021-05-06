@@ -70,7 +70,7 @@ class CoEncoder(LightningModule):
     # Alternating schedule for optimizer steps (e.g. GANs)
     def optimizer_step(
             self, epoch, batch_idx, optimizer, optimizer_idx, optimizer_closure,
-            on_tpu, using_native_amp, using_lbfgs
+            on_tpu=False, using_native_amp=False, using_lbfgs=False,
     ):
         # update generator every step
         if optimizer_idx == 0:
@@ -89,6 +89,7 @@ class CoEncoder(LightningModule):
         return r1, r2
 
     def training_step(self, batch, batch_idx, optimizer_idx):
+
         desc, code = batch["desc"], batch["code"]
         r1, r2 = self(desc, code)
         train_loss = self.loss(r1, r2)
