@@ -65,7 +65,7 @@ class EvalHelper:
         index = nmslib.init(method='brute_force', space='cosinesimil')
 
         for prediction in predictions:
-            index.addDataPoint(id=prediction["idx"], data=prediction["r2"])
+            index.addDataPoint(id=prediction["idx"], data=prediction["code_repr"])
 
         index.createIndex()
         return index
@@ -75,7 +75,7 @@ class EvalHelper:
         ranking = []
         for prediction in predictions:
             target_idx = prediction["idx"]
-            ids, distances = index.knnQuery(prediction["r1"], k=k)
+            ids, distances = index.knnQuery(prediction["desc_repr"], k=k)
             ids = ids.tolist()
             if target_idx in ids:
                 ranking.append(ids.index(target_idx) + 1)
