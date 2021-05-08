@@ -1,0 +1,16 @@
+# @package _group_
+
+name: "JAVA_V01"
+
+dir: "../resources/datasets/JAVA_V01/"
+
+num_train_samples: 1937136
+num_test_samples: 105832
+num_val_samples: 106153
+
+desc_max_length: 12
+code_max_length: 82
+
+batch_size: 16
+num_workers: 64
+shuffle: True

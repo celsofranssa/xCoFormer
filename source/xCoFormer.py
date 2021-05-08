@@ -9,7 +9,7 @@ import torch
 from omegaconf import OmegaConf
 from pytorch_lightning import Trainer
 from pytorch_lightning import loggers as pl_loggers
-from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
+from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping, LearningRateMonitor
 from transformers import AutoTokenizer
 
 from source.DataModule.CodeDescDataModule import CodeDescDataModule
@@ -66,6 +66,9 @@ def fit(hparams):
     # early stopping callback
     early_stopping_callback = get_early_stopping_callback(hparams.trainer)
 
+    # learning rate monitor
+    lr_monitor = LearningRateMonitor(logging_interval='step')
+
     # tokenizers
     desc_tokenizer = get_tokenizer(hparams.model)
     code_tokenizer = get_tokenizer(hparams.model)
@@ -81,7 +84,7 @@ def fit(hparams):
         gpus=1,
         enable_pl_optimizer=True,
         logger=tb_logger,
-        callbacks=[checkpoint_callback, early_stopping_callback]
+        callbacks=[checkpoint_callback, early_stopping_callback, lr_monitor]
     )
 
     # training

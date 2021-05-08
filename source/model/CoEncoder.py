@@ -84,43 +84,43 @@ class CoEncoder(LightningModule):
 
 
     def forward(self, desc, code):
-        r1 = self.desc_encoder(desc)
-        r2 = self.code_encoder(code)
-        return r1, r2
+        desc_repr = self.desc_encoder(desc)
+        code_repr = self.code_encoder(code)
+        return desc_repr, code_repr
 
     def training_step(self, batch, batch_idx, optimizer_idx):
 
         desc, code = batch["desc"], batch["code"]
-        r1, r2 = self(desc, code)
-        train_loss = self.loss(r1, r2)
+        desc_repr, code_repr = self(desc, code)
+        train_loss = self.loss(desc_repr, code_repr)
         return train_loss
 
     def validation_step(self, batch, batch_idx):
         desc, code = batch["desc"], batch["code"]
-        r1, r2 = self(desc, code)
-        self.log("val_mrr", self.mrr(r1, r2), prog_bar=True)
-        self.log("val_loss", self.loss(r1, r2), prog_bar=True)
+        desc_repr, code_repr = self(desc, code)
+        self.log("val_mrr", self.mrr(desc_repr, code_repr), prog_bar=True)
+        self.log("val_loss", self.loss(desc_repr, code_repr), prog_bar=True)
 
     def validation_epoch_end(self, outs):
         self.log('m_val_mrr', self.mrr.compute())
 
     def test_step(self, batch, batch_idx):
         idx, desc, code = batch["idx"], batch["desc"], batch["code"]
-        r1, r2 = self(desc, code)
+        desc_repr, code_repr = self(desc, code)
         self.write_prediction_dict({
             "idx": idx,
-            "r1": r1,
-            "r2": r2
+            "desc_repr": desc_repr,
+            "code_repr": code_repr
         }, self.hparams.predictions.path)
-        self.log('test_mrr', self.mrr(r1, r2), prog_bar=True)
+        self.log('test_mrr', self.mrr(desc_repr, code_repr), prog_bar=True)
 
     def test_epoch_end(self, outs):
         self.log('m_test_mrr', self.mrr.compute())
 
-    def get_x1_encoder(self):
+    def get_desc_encoder(self):
         return self.desc_encoder
 
-    def get_x2_encoder(self):
+    def get_code_encoder(self):
         return self.desc_encoder
 
     @property
