@@ -2,14 +2,14 @@
 
 name: "JAVA_V01"
 
-dir: "../resources/datasets/JAVA_V01/"
+dir: "../resources/datasets/PYTHON_V01/"
 
-num_train_samples: 1937136
-num_test_samples: 105832
-num_val_samples: 106153
+num_train_samples: 109070
+num_test_samples: 2000
+num_val_samples: 2000
 
-desc_max_length: 12
-code_max_length: 82
+desc_max_length: 16
+code_max_length: 128
 
 batch_size: 16
 num_workers: 64
