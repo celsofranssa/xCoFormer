@@ -1,6 +1,6 @@
 # @package _group_
 
-name: "BERT"
+name: "ROBERTA_ATT_POOL"
 
 desc_encoder: "source.encoder.RoBERTaEncoder.RoBERTaEncoder"
 desc_encoder_hparams:
@@ -32,7 +32,6 @@ loss_hparams:
 
 tokenizer:
   architecture: "roberta-base"
-  do_lower_case: do_lower_case
 
 predictions:
-  path: "../resources/predictions/clm_${data.name}predictions.pt"
+  path: "../resources/predictions/ROBERTA_ATT_POOL_${data.name}predictions.pt"

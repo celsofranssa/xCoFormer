@@ -1,10 +1,10 @@
 # @package _group_
 
-name: "BERT"
+name: "CLM_ATT_POOL"
 
-desc_encoder: "source.encoder.BertEncoder.BertEncoder"
+desc_encoder: "source.encoder.CLMEncoder.CLMEncoder"
 desc_encoder_hparams:
-  architecture: "bert-base-uncased"
+  architecture: "microsoft/codebert-base"
   output_attentions: False
   pooling: "source.pooling.AttentivePooling.AttentivePooling"
   pooling_hparams:
@@ -12,9 +12,9 @@ desc_encoder_hparams:
     max_length: ${data.desc_max_length}
 
 
-code_encoder: "source.encoder.BertEncoder.BertEncoder"
+code_encoder: "source.encoder.CLMEncoder.CLMEncoder"
 code_encoder_hparams:
-  architecture: "bert-base-uncased"
+  architecture: "microsoft/codebert-base"
   output_attentions: False
   pooling: "source.pooling.AttentivePooling.AttentivePooling"
   pooling_hparams:
@@ -31,8 +31,7 @@ loss_hparams:
   name: "NPairsLoss"
 
 tokenizer:
-  architecture: "bert-base-uncased"
-  do_lower_case: do_lower_case
+  architecture: "microsoft/codebert-base"
 
 predictions:
-  path: "../resources/predictions/clm_${data.name}predictions.pt"
+  path: "../resources/predictions/CLM_ATT_POOL_${data.name}predictions.pt"

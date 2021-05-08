@@ -1,0 +1,37 @@
+# @package _group_
+
+name: "BERT_AVG_POOL"
+
+desc_encoder: "source.encoder.BertEncoder.BertEncoder"
+desc_encoder_hparams:
+  architecture: "bert-base-uncased"
+  output_attentions: False
+  pooling: "source.pooling.AveragePooling.AveragePooling"
+  pooling_hparams:
+    hidden_size: 768
+    max_length: ${data.desc_max_length}
+
+
+code_encoder: "source.encoder.BertEncoder.BertEncoder"
+code_encoder_hparams:
+  architecture: "bert-base-uncased"
+  output_attentions: False
+  pooling: "source.pooling.AveragePooling.AveragePooling"
+  pooling_hparams:
+    hidden_size: 768
+    max_length: ${data.code_max_length}
+
+lr: 1e-5
+base_lr: 1e-7
+max_lr: 1e-3
+weight_decay: 1e-2
+
+loss: "source.loss.NPairsLoss.NPairsLoss"
+loss_hparams:
+  name: "NPairsLoss"
+
+tokenizer:
+  architecture: "bert-base-uncased"
+
+predictions:
+  path: "../resources/predictions/BERT_AVG_POOL_${data.name}predictions.pt"
