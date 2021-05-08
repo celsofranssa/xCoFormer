@@ -51,7 +51,7 @@ class CodeDescDataModule(pl.LightningDataModule):
         return DataLoader(
             self.train_dataset,
             batch_size=self.params.batch_size,
-            shuffle=self.params.shuffle,
+            shuffle=True,
             num_workers=self.params.num_workers
         )
 
@@ -59,7 +59,7 @@ class CodeDescDataModule(pl.LightningDataModule):
         return DataLoader(
             self.val_dataset,
             batch_size=self.params.batch_size,
-            shuffle=self.params.shuffle,
+            shuffle=False,
             num_workers=self.params.num_workers
         )
 
@@ -67,6 +67,6 @@ class CodeDescDataModule(pl.LightningDataModule):
         return DataLoader(
             self.test_dataset,
             batch_size=self.params.batch_size,
-            shuffle=self.params.shuffle,
+            shuffle=False,
             num_workers=self.params.num_workers
         )
