@@ -1,15 +1,15 @@
 # @package _group_
 
-name: "JAVA_V01"
+name: "PYTHON_V01"
 
 dir: "../resources/datasets/PYTHON_V01/"
 
-num_train_samples: 109070
-num_test_samples: 2000
-num_val_samples: 2000
+num_train_samples: 79149
+num_test_samples: 16961
+num_val_samples: 16960
 
 desc_max_length: 16
 code_max_length: 128
 
-batch_size: 16
+batch_size: 64
 num_workers: 64
