@@ -93,7 +93,7 @@ class EvalHelper:
         return self.retrieve(index, predictions, k=self.hparams.data.num_test_samples)
 
     def perform_eval(self):
-        thresholds = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+        thresholds = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, self.hparams.data.num_test_samples]
         stats = []
         ranking = self.get_ranking()
 
