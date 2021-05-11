@@ -83,6 +83,7 @@ def fit(hparams):
         precision=hparams.trainer.precision,
         gpus=1,
         enable_pl_optimizer=True,
+        progress_bar_refresh_rate=20,
         logger=tb_logger,
         callbacks=[checkpoint_callback, early_stopping_callback, lr_monitor]
     )
@@ -110,8 +111,7 @@ def predict(hparams):
     # trainer
     trainer = Trainer(
         fast_dev_run=hparams.trainer.fast_dev_run,
-        max_epochs=hparams.trainer.max_epochs,
-        enable_pl_optimizer=True,
+        progress_bar_refresh_rate=20,
         gpus=1
     )
 
