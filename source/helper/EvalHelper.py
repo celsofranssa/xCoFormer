@@ -5,6 +5,7 @@ import nmslib
 import numpy as np
 import torch
 from omegaconf import OmegaConf
+from tqdm import tqdm
 
 
 class EvalHelper:
@@ -61,19 +62,25 @@ class EvalHelper:
         return torch.load(self.hparams.model.predictions.path)
 
     def init_index(self, predictions):
-        # initialize a new index, using a HNSW index on Cosine Similarity
-        index = nmslib.init(method='brute_force', space='cosinesimil')
 
-        for prediction in predictions:
+        M = 30
+        efC = 100
+        num_threads = 4
+        index_time_params = {'M': M, 'indexThreadQty': num_threads, 'efConstruction': efC, 'post': 0}
+
+        # initialize a new index, using a HNSW index on Cosine Similarity
+        index = nmslib.init(method='hnsw', space='cosinesimil')
+
+        for prediction in tqdm(predictions, desc="Indexing"):
             index.addDataPoint(id=prediction["idx"], data=prediction["code_repr"])
 
-        index.createIndex()
+        index.createIndex(index_time_params)
         return index
 
     def retrieve(self, index, predictions, k=100):
         # retrieve
         ranking = []
-        for prediction in predictions:
+        for prediction in tqdm(predictions, desc="Searching"):
             target_idx = prediction["idx"]
             ids, distances = index.knnQuery(prediction["desc_repr"], k=k)
             ids = ids.tolist()
@@ -83,19 +90,19 @@ class EvalHelper:
                 ranking.append(1e9)
         return ranking
 
-    def get_ranking(self):
+    def get_ranking(self, k):
 
         # load predictions
         predictions = self.load_predictions()
 
         index = self.init_index(predictions)
 
-        return self.retrieve(index, predictions, k=self.hparams.data.num_test_samples)
+        return self.retrieve(index, predictions, k=k)
 
     def perform_eval(self):
-        thresholds = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, self.hparams.data.num_test_samples]
+        thresholds = [1, 5, 10]
         stats = []
-        ranking = self.get_ranking()
+        ranking = self.get_ranking(k=thresholds[-1])
 
         for k in thresholds:
             stats.append(

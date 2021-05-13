@@ -230,8 +230,9 @@ def update_hparams(hparams):
     hparams.model.predictions.path = f"../resources/predictions/{hparams.model.name}_{hparams.data.name}_predictions.pt"
 
     # update pooling
-    hparams.model.code_encoder_hparams.pooling_hparams.max_length=hparams.data.code_max_length
-    hparams.model.desc_encoder_hparams.pooling_hparams.max_length=hparams.data.desc_max_length
+    if "code_encoder_hparams" in hparams.model:
+        hparams.model.code_encoder_hparams.pooling_hparams.max_length=hparams.data.code_max_length
+        hparams.model.desc_encoder_hparams.pooling_hparams.max_length=hparams.data.desc_max_length
 
 
     # update interpolation util the nesse update
