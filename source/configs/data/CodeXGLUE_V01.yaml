@@ -1,6 +1,6 @@
 # @package _group_
 
-name: "CodeXGLUE_v01"
+name: "CodeXGLUE_V01"
 
 dir: "../resources/datasets/CodeXGLUE_V01/"
 
