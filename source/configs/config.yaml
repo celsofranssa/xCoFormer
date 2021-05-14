@@ -1,6 +1,6 @@
 defaults:
-  - model: CLM
-  - data: CodeXGLUE_v01
+  - model: GRU_AVG_POOL
+  - data: PYTHON_v01
 
 log:
   dir: "../resources/logs/"
