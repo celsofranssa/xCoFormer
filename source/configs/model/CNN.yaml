@@ -1,23 +1,28 @@
 # @package _group_
 
-name: "GRU_AVG_POOL"
+name: "CNN"
 
-desc_encoder: "source.encoder.GRUEncoder.GRUEncoder"
+desc_encoder: "source.encoder.CNNEncoder.CNNEncoder"
 desc_encoder_hparams:
   vocabulary_size: 50000
   representation_size: 768
-  hidden_size: 768
+  out_channels: 4000
+  kernel_sizes: [ 2, 3, 5 ]
+  max_length: ${data.desc_max_length}
   pooling: "source.pooling.AveragePooling.AveragePooling"
   pooling_hparams:
     hidden_size: 768
-    max_length: ${data.desc_max_length}
+    max_length: ${data.code_max_length}
 
 
-code_encoder: "source.encoder.GRUEncoder.GRUEncoder"
+code_encoder: "source.encoder.CNNEncoder.CNNEncoder"
 code_encoder_hparams:
   vocabulary_size: 50000
   representation_size: 768
-  hidden_size: 768
+  out_channels: 4000
+  kernel_sizes: [ 2, 3, 5 ]
+  max_length: ${data.code_max_length}
+
   pooling: "source.pooling.AveragePooling.AveragePooling"
   pooling_hparams:
     hidden_size: 768
@@ -36,4 +41,4 @@ tokenizer:
   architecture: "bert-base-uncased"
 
 predictions:
-  path: "../resources/predictions/GRU_AVG_POOL_${data.name}predictions.pt"
+  path: "../resources/predictions/CNN_${data.name}predictions.pt"

@@ -19,7 +19,7 @@ class CNNEncoder(LightningModule):
 
         # convolutional layers
         self.convs = nn.ModuleList([
-            self.get_conv_layer(hparams.representation_size, hparams.out_channels, kernel_size, hparams.sentence_length)
+            self.get_conv_layer(hparams.representation_size, hparams.out_channels, kernel_size, hparams.max_length)
             for kernel_size in kernel_sizes])
 
         self.linear = nn.Linear(3 * 4000, hparams.representation_size)

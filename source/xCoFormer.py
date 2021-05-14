@@ -237,8 +237,8 @@ def update_hparams(hparams):
 
     # update interpolation util the nesse update
     if hparams.model.name == "cnn":
-        hparams.model.x1_encoder_hparams.sentence_length = hparams.data.desc_max_length
-        hparams.model.x2_encoder_hparams.sentence_length = hparams.data.code_max_length
+        hparams.model.x1_encoder_hparams.desc_max_length = hparams.data.desc_max_length
+        hparams.model.x2_encoder_hparams.code_max_length = hparams.data.code_max_length
 
     return hparams
 
