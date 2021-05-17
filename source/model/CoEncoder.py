@@ -3,6 +3,7 @@ import json
 
 import torch
 from pytorch_lightning.core.lightning import LightningModule
+from pytorch_lightning.metrics import MeanSquaredError
 
 from source.metric.MRRMetric import MRRMetric
 
@@ -22,7 +23,7 @@ class CoEncoder(LightningModule):
         # loss function
         self.loss = self.get_loss(hparams.loss, hparams.loss_hparams)
 
-        self.embedding_file = open("/home/celso/projects/xCoFormer/resources/co_training/train.embeddings", "w")
+        self.cos_sim = torch.nn.CosineSimilarity(dim=1, eps=1e-08)
 
         # metric
         self.mrr = MRRMetric()
@@ -99,18 +100,9 @@ class CoEncoder(LightningModule):
         ids, desc, code = batch["idx"], batch["desc"], batch["code"]
         desc_repr, code_repr = self(desc, code)
         train_loss = self.loss(desc_repr, code_repr)
+        self.log("cos_sim", self.cos_sim(desc_repr, code_repr), prog_bar=True)
 
-        for idx, r1, r2 in zip(ids,desc_repr, code_repr):
-            entry = {
-                "idx": idx.item(),
-                "desc_repr": r1.tolist(),
-                "code_repr": r2.tolist(),
-                "batch_idx": batch_idx,
-                "epoch_idx": self.current_epoch,
-                "global_step": self.global_step,
 
-            }
-            self.embedding_file.write(f"{json.dumps(entry)}\n")
         return train_loss
 
     def on_fit_end(self):
