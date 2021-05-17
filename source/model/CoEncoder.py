@@ -1,4 +1,5 @@
 import importlib
+import json
 
 import torch
 from pytorch_lightning.core.lightning import LightningModule
@@ -21,8 +22,12 @@ class CoEncoder(LightningModule):
         # loss function
         self.loss = self.get_loss(hparams.loss, hparams.loss_hparams)
 
+        self.embedding_file = open("/home/celso/projects/xCoFormer/resources/co_training/train.embeddings", "w")
+
         # metric
         self.mrr = MRRMetric()
+
+
 
     @staticmethod
     def get_encoder(encoder, encoder_hparams):
@@ -41,9 +46,9 @@ class CoEncoder(LightningModule):
         # optimizers
         optimizers = [
             torch.optim.AdamW(self.desc_encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
-                             weight_decay=self.hparams.weight_decay, amsgrad=True),
+                              weight_decay=self.hparams.weight_decay, amsgrad=True),
             torch.optim.AdamW(self.code_encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
-                             weight_decay=self.hparams.weight_decay, amsgrad=True)
+                              weight_decay=self.hparams.weight_decay, amsgrad=True)
         ]
 
         # schedulers
@@ -82,18 +87,34 @@ class CoEncoder(LightningModule):
             if batch_idx % 2 != 0:
                 optimizer.step(closure=optimizer_closure)
 
-
     def forward(self, desc, code):
         desc_repr = self.desc_encoder(desc)
         code_repr = self.code_encoder(code)
         return desc_repr, code_repr
 
+
+
     def training_step(self, batch, batch_idx, optimizer_idx):
 
-        desc, code = batch["desc"], batch["code"]
+        ids, desc, code = batch["idx"], batch["desc"], batch["code"]
         desc_repr, code_repr = self(desc, code)
         train_loss = self.loss(desc_repr, code_repr)
+
+        for idx, r1, r2 in zip(ids,desc_repr, code_repr):
+            entry = {
+                "idx": idx.item(),
+                "desc_repr": r1.tolist(),
+                "code_repr": r2.tolist(),
+                "batch_idx": batch_idx,
+                "epoch_idx": self.current_epoch,
+                "global_step": self.global_step,
+
+            }
+            self.embedding_file.write(f"{json.dumps(entry)}\n")
         return train_loss
+
+    def on_fit_end(self):
+        self.embedding_file.close()
 
     def validation_step(self, batch, batch_idx):
         desc, code = batch["desc"], batch["code"]

@@ -78,8 +78,8 @@ def fit(hparams):
     model = CoEncoder(hparams.model)
 
     trainer = Trainer(
-        fast_dev_run=hparams.trainer.fast_dev_run,
-        max_epochs=hparams.trainer.max_epochs,
+        max_epochs=7,
+        limit_train_batches=5,
         precision=hparams.trainer.precision,
         gpus=1,
         enable_pl_optimizer=True,

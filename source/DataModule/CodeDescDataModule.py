@@ -51,7 +51,7 @@ class CodeDescDataModule(pl.LightningDataModule):
         return DataLoader(
             self.train_dataset,
             batch_size=self.params.batch_size,
-            shuffle=True,
+            shuffle=False,
             num_workers=self.params.num_workers
         )
 
