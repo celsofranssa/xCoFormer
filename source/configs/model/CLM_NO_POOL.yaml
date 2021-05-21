@@ -1,0 +1,37 @@
+# @package _group_
+
+name: "CLM_NO_POOL"
+
+desc_encoder: "source.encoder.CLMEncoder.CLMEncoder"
+desc_encoder_hparams:
+  architecture: "microsoft/codebert-base"
+  output_attentions: False
+  pooling: "source.pooling.NoPooling.NoPooling"
+  pooling_hparams:
+    hidden_size: 768
+    max_length: ${data.desc_max_length}
+
+
+code_encoder: "source.encoder.CLMEncoder.CLMEncoder"
+code_encoder_hparams:
+  architecture: "microsoft/codebert-base"
+  output_attentions: False
+  pooling: "source.pooling.NoPooling.NoPooling"
+  pooling_hparams:
+    hidden_size: 768
+    max_length: ${data.code_max_length}
+
+lr: 1e-5
+base_lr: 1e-7
+max_lr: 1e-3
+weight_decay: 1e-2
+
+loss: "source.loss.NPairsLoss.NPairsLoss"
+loss_hparams:
+  name: "NPairsLoss"
+
+tokenizer:
+  architecture: "microsoft/codebert-base"
+
+predictions:
+  path: "../resources/predictions/CLM_NO_POOL_${data.name}predictions.pt"
