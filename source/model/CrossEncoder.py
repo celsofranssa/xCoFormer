@@ -44,8 +44,8 @@ class CrossEncoder(LightningModule):
                              weight_decay=self.hparams.weight_decay, amsgrad=True)
 
     def forward(self, desc, code):
-        desc_repr = self.desc_encoder(desc)
-        code_repr = self.code_encoder(code)
+        desc_repr = self.encoder(desc)
+        code_repr = self.encoder(code)
         return desc_repr, code_repr
 
     def training_step(self, batch, batch_idx):
