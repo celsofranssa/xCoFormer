@@ -10,12 +10,11 @@ class CrossEncoder(LightningModule):
     """Encodes the code and desc into an same space of embeddings."""
 
     def __init__(self, hparams):
-
         super(CrossEncoder, self).__init__()
         self.hparams = hparams
 
         # encoders
-        self.encoder = self.get_encoder(hparams.desc_encoder, hparams.x1_encoder_hparams)
+        self.encoder = self.get_encoder(hparams.desc_encoder, hparams.desc_encoder_hparams)
 
         # loss function
         self.loss_fn = self.get_loss(hparams.loss, hparams.loss_hparams)
@@ -41,51 +40,48 @@ class CrossEncoder(LightningModule):
         return r1, r2
 
     def configure_optimizers(self):
-        # optimizers
-        optimizers = [
-            torch.optim.Adam(self.encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
-                             weight_decay=0, amsgrad=True)
-        ]
+        return torch.optim.AdamW(self.desc_encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
+                             weight_decay=self.hparams.weight_decay, amsgrad=True)
 
-        # schedulers
-        step_size_up = 0.03 * self.num_training_steps
+    def forward(self, desc, code):
+        desc_repr = self.desc_encoder(desc)
+        code_repr = self.code_encoder(code)
+        return desc_repr, code_repr
 
-        schedulers = [
-            torch.optim.lr_scheduler.CyclicLR(optimizers[0], mode='triangular2', base_lr=self.hparams.lr, max_lr=1e-3,
-                                              step_size_up=step_size_up, cycle_momentum=False)
-        ]
-        return optimizers, schedulers
-
-    def training_step(self, batch, batch_idx, optimizer_idx=0):
-
-        x1, x2 = batch["x1"], batch["x2"]
-        r1, r2 = self(x1, x2)
-        train_loss = self.loss_fn(r1, r2)
+    def training_step(self, batch, batch_idx):
+        desc, code = batch["desc"], batch["code"]
+        desc_repr, code_repr = self(desc, code)
+        train_loss = self.loss(desc_repr, code_repr)
         return train_loss
 
     def validation_step(self, batch, batch_idx):
-        x1, x2 = batch["x1"], batch["x2"]
-        r1, r2 = self(x1, x2)
-        self.log("val_mrr", self.mrr(r1, r2), prog_bar=True)
-        self.log("val_loss", self.loss_fn(r1, r2), prog_bar=True)
+        desc, code = batch["desc"], batch["code"]
+        desc_repr, code_repr = self(desc, code)
+        self.log("val_mrr", self.mrr(desc_repr, code_repr), prog_bar=True)
+        self.log("val_loss", self.loss(desc_repr, code_repr), prog_bar=True)
 
     def validation_epoch_end(self, outs):
         self.log('m_val_mrr', self.mrr.compute())
 
     def test_step(self, batch, batch_idx):
         idx, desc, code = batch["idx"], batch["desc"], batch["code"]
-        r1, r2 = self(desc, code)
+        desc_repr, code_repr = self(desc, code)
         self.write_prediction_dict({
-            "idx": id,
-            "r1": r1,
-            "r2": r2
+            "idx": idx,
+            "desc_repr": desc_repr,
+            "code_repr": code_repr
         }, self.hparams.predictions.path)
-        self.log('test_mrr', self.mrr(r1, r2), prog_bar=True)
+        self.log('test_mrr', self.mrr(desc_repr, code_repr), prog_bar=True)
 
     def test_epoch_end(self, outs):
         self.log('m_test_mrr', self.mrr.compute())
 
-    
+    def get_desc_encoder(self):
+        return self.desc_encoder
+
+    def get_code_encoder(self):
+        return self.desc_encoder
+
     @property
     def num_training_steps(self) -> int:
         """Total training steps inferred from datamodule and number of epochs."""
