@@ -17,7 +17,7 @@ class CrossEncoder(LightningModule):
         self.encoder = self.get_encoder(hparams.desc_encoder, hparams.desc_encoder_hparams)
 
         # loss function
-        self.loss_fn = self.get_loss(hparams.loss, hparams.loss_hparams)
+        self.loss = self.get_loss(hparams.loss, hparams.loss_hparams)
 
         # metric
         self.mrr = MRRMetric()
