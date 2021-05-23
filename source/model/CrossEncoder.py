@@ -64,7 +64,7 @@ class CrossEncoder(LightningModule):
         code_repr = self.encoder(code)
         return desc_repr, code_repr
 
-    def training_step(self, batch, batch_idx):
+    def training_step(self, batch, batch_idx, optimizer_idx=0):
         desc, code = batch["desc"], batch["code"]
         desc_repr, code_repr = self(desc, code)
         train_loss = self.loss(desc_repr, code_repr)
