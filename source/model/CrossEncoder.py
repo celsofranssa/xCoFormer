@@ -20,7 +20,9 @@ class CrossEncoder(LightningModule):
         self.loss = self.get_loss(hparams.loss, hparams.loss_hparams)
 
         # metric
-        self.mrr = MRRMetric()
+        self.val_mrr = MRRMetric()
+        self.test_mrr = MRRMetric()
+        self.train_mrr = MRRMetric()
 
     @staticmethod
     def get_encoder(encoder, encoder_hparams):
@@ -70,16 +72,21 @@ class CrossEncoder(LightningModule):
         desc, code = batch["desc"], batch["code"]
         desc_repr, code_repr = self(desc, code)
         train_loss = self.loss(desc_repr, code_repr)
+        self.log("train_mrr", self.train_mrr(desc_repr, code_repr), prog_bar=True)
+
         return train_loss
+
+    def training_epoch_end(self, outputs):
+        self.log('m_train_mrr', self.train_mrr.compute())
 
     def validation_step(self, batch, batch_idx):
         desc, code = batch["desc"], batch["code"]
         desc_repr, code_repr = self(desc, code)
-        self.log("val_mrr", self.mrr(desc_repr, code_repr), prog_bar=True)
+        self.log("val_mrr", self.val_mrr(desc_repr, code_repr), prog_bar=True)
         self.log("val_loss", self.loss(desc_repr, code_repr), prog_bar=True)
 
     def validation_epoch_end(self, outs):
-        self.log('m_val_mrr', self.mrr.compute())
+        self.log('m_val_mrr', self.val_mrr.compute())
 
     def test_step(self, batch, batch_idx):
         idx, desc, code = batch["idx"], batch["desc"], batch["code"]
@@ -89,10 +96,10 @@ class CrossEncoder(LightningModule):
             "desc_repr": desc_repr,
             "code_repr": code_repr
         }, self.hparams.predictions.path)
-        self.log('test_mrr', self.mrr(desc_repr, code_repr), prog_bar=True)
+        self.log('test_mrr', self.test_mrr(desc_repr, code_repr), prog_bar=True)
 
     def test_epoch_end(self, outs):
-        self.log('m_test_mrr', self.mrr.compute())
+        self.log('m_test_mrr', self.test_mrr.compute())
 
     def get_desc_encoder(self):
         return self.desc_encoder
