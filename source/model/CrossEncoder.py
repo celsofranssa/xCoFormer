@@ -41,30 +41,32 @@ class CrossEncoder(LightningModule):
 
     def configure_optimizers(self):
         # optimizers
-        optimizers = [
-            torch.optim.AdamW(self.encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
-                              weight_decay=self.hparams.weight_decay, amsgrad=True)
-            ]
-
-        # schedulers
-        step_size_up = 0.03 * self.num_training_steps
-
-        schedulers = [
-            torch.optim.lr_scheduler.CyclicLR(
-                optimizers[0],
-                mode='triangular2',
-                base_lr=self.hparams.base_lr,
-                max_lr=self.hparams.max_lr,
-                step_size_up=step_size_up,
-                cycle_momentum=False)]
-        return optimizers, schedulers
+        return torch.optim.AdamW(self.encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
+                          weight_decay=self.hparams.weight_decay, amsgrad=True)
+        # optimizers = [
+        #     torch.optim.AdamW(self.encoder.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999), eps=1e-08,
+        #                       weight_decay=self.hparams.weight_decay, amsgrad=True)
+        #     ]
+        #
+        # # schedulers
+        # step_size_up = 0.03 * self.num_training_steps
+        #
+        # schedulers = [
+        #     torch.optim.lr_scheduler.CyclicLR(
+        #         optimizers[0],
+        #         mode='triangular2',
+        #         base_lr=self.hparams.base_lr,
+        #         max_lr=self.hparams.max_lr,
+        #         step_size_up=step_size_up,
+        #         cycle_momentum=False)]
+        # return optimizers, schedulers
 
     def forward(self, desc, code):
         desc_repr = self.encoder(desc)
         code_repr = self.encoder(code)
         return desc_repr, code_repr
 
-    def training_step(self, batch, batch_idx, optimizer_idx=0):
+    def training_step(self, batch, batch_idx):
         desc, code = batch["desc"], batch["code"]
         desc_repr, code_repr = self(desc, code)
         train_loss = self.loss(desc_repr, code_repr)
