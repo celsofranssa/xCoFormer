@@ -60,8 +60,6 @@ class EvalHelper:
                     f"{json.dumps({'idx':idx, 'position': position})}\n"
                 )
 
-            json.dump(ranking, ranking_file)
-
     def load_predictions(self):
         # load predictions
         return torch.load(self.hparams.model.predictions.path)
