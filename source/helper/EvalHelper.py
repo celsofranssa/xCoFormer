@@ -79,15 +79,15 @@ class EvalHelper:
 
     def retrieve(self, index, predictions, k):
         # retrieve
-        ranking = []
+        ranking = {}
         for prediction in tqdm(predictions, desc="Searching"):
             target_idx = prediction["idx"]
             ids, distances = index.knnQuery(prediction["desc_repr"], k=k)
             ids = ids.tolist()
             if target_idx in ids:
-                ranking.append(ids.index(target_idx) + 1)
+                ranking[target_idx] = ids.index(target_idx) + 1
             else:
-                ranking.append(1e9)
+                ranking[target_idx] = 1e9
         return ranking
 
     def get_ranking(self, k):
@@ -112,7 +112,7 @@ class EvalHelper:
                 {
                     "k": k,
                     "metric": "MRR",
-                    "value": self.mrr_at_k(ranking, k, self.hparams.data.num_test_samples),
+                    "value": self.mrr_at_k(ranking.values(), k, self.hparams.data.num_test_samples),
                     "model": self.hparams.model.name,
                     "datasets": self.hparams.data.name
                 }
@@ -121,7 +121,7 @@ class EvalHelper:
                 {
                     "k": k,
                     "metric": "Recall",
-                    "value": self.recall_at_k(ranking, k, self.hparams.data.num_test_samples),
+                    "value": self.recall_at_k(ranking.values(), k, self.hparams.data.num_test_samples),
                     "model": self.hparams.model.name,
                     "datasets": self.hparams.data.name
                 }
