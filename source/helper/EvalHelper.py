@@ -55,8 +55,7 @@ class EvalHelper:
 
     def checkpoint_ranking(self, ranking, ranking_path):
         with open(ranking_path, "w") as ranking_file:
-            for data in ranking:
-                ranking_file.write(f"{json.dumps(data)}\n")
+            json.dumps(ranking, ranking_file)
 
     def load_predictions(self):
         # load predictions
