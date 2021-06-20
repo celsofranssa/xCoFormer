@@ -55,14 +55,14 @@ class EvalHelper:
 
     def checkpoint_ranking(self, ranking, ranking_path):
         with open(ranking_path, "w") as ranking_file:
-            ranking_file.write(f"{ranking}\n")
+            for data in ranking:
+                ranking_file.write(f"{json.dumps(data)}\n")
 
     def load_predictions(self):
         # load predictions
         return torch.load(self.hparams.model.predictions.path)
 
     def init_index(self, predictions):
-
         M = 30
         efC = 100
         num_threads = 4
@@ -77,7 +77,7 @@ class EvalHelper:
         index.createIndex(index_time_params)
         return index
 
-    def retrieve(self, index, predictions, k=100):
+    def retrieve(self, index, predictions, k):
         # retrieve
         ranking = []
         for prediction in tqdm(predictions, desc="Searching"):
@@ -95,11 +95,14 @@ class EvalHelper:
         # load predictions
         predictions = self.load_predictions()
 
+        # index data
         index = self.init_index(predictions)
 
+        # retrieve
         return self.retrieve(index, predictions, k=k)
 
     def perform_eval(self):
+
         thresholds = [1, 5, 10]
         stats = []
         ranking = self.get_ranking(k=thresholds[-1])
@@ -123,7 +126,6 @@ class EvalHelper:
                     "datasets": self.hparams.data.name
                 }
             )
-        print(self.mrr(ranking))
 
         stats_path = self.hparams.stats.dir + self.hparams.model.name + "_" + self.hparams.data.name + ".stats"
         ranking_path = self.hparams.rankings.dir + self.hparams.model.name + "_" + self.hparams.data.name + ".ranking"
