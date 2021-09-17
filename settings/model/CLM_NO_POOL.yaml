@@ -1,0 +1,38 @@
+name: CLM_NO_POOL
+
+desc_encoder:
+  _target_: source.encoder.BertEncoder.BertEncoder
+  architecture: microsoft/codebert-base
+  output_attentions: False
+  pooling:
+    _target_: source.pooling.NoPooling.NoPooling
+
+code_encoder:
+  _target_: source.encoder.BertEncoder.BertEncoder
+  architecture: microsoft/codebert-base
+  output_attentions: False
+  pooling:
+    _target_: source.pooling.NoPooling.NoPooling
+
+hidden_size: 768
+
+desc_tokenizer:
+  architecture: ${model.desc_encoder.architecture}
+
+code_tokenizer:
+  architecture: ${model.code_encoder.architecture}
+
+lr: 1e-5
+base_lr: 1e-7
+max_lr: 1e-3
+weight_decay: 1e-2
+
+loss:
+  _target_: source.loss.NPairsLoss.NPairsLoss
+  name: N-Pair-Loss
+
+
+
+stat:
+  dir: resource/stat/
+  name: ${model.name}_${data.name}.stat

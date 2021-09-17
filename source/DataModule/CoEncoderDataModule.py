@@ -1,46 +1,52 @@
+import pickle
+
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader
 
-from source.Dataset.CodeSearchDataset import CodeSearchDataset
+from source.Dataset.CoEncoderDataset import CoEncoderDataset
 
 
-class CodeDescDataModule(pl.LightningDataModule):
+class CoEncoderDataModule(pl.LightningDataModule):
+    """
+    CodeSearch DataModule
     """
 
-    """
-
-    def __init__(self, params, desc_tokenizer, code_tokenizer):
-        super().__init__()
+    def __init__(self, params, desc_tokenizer, code_tokenizer, fold):
+        super(CoEncoderDataModule, self).__init__()
         self.params = params
         self.desc_tokenizer = desc_tokenizer
         self.code_tokenizer = code_tokenizer
+        self.fold = fold
 
     def prepare_data(self):
-        pass
+        with open(self.params.dir + f"samples.pkl", "rb") as dataset_file:
+            self.samples = pickle.load(dataset_file)
 
     def setup(self, stage=None):
 
-        # Assign train/val datasets for use in dataloaders
-        if stage == 'fit' or stage is None:
-            self.train_dataset = CodeSearchDataset(
-                data_path=self.params.dir + "train.jsonl",
+        if stage == 'fit':
+            self.train_dataset = CoEncoderDataset(
+                samples=self.samples,
+                ids_path=self.params.dir + f"fold_{self.fold}/train.pkl",
                 desc_tokenizer=self.desc_tokenizer,
                 code_tokenizer=self.code_tokenizer,
                 desc_max_length=self.params.desc_max_length,
                 code_max_length=self.params.code_max_length
             )
 
-            self.val_dataset = CodeSearchDataset(
-                data_path=self.params.dir + "val.jsonl",
+            self.val_dataset = CoEncoderDataset(
+                samples=self.samples,
+                ids_path=self.params.dir + f"fold_{self.fold}/val.pkl",
                 desc_tokenizer=self.desc_tokenizer,
                 code_tokenizer=self.code_tokenizer,
                 desc_max_length=self.params.desc_max_length,
                 code_max_length=self.params.code_max_length
             )
 
-        if stage == 'test' or stage is None:
-            self.test_dataset = CodeSearchDataset(
-                data_path=self.params.dir + "test.jsonl",
+        if stage == 'test' or stage is "predict":
+            self.test_dataset = CoEncoderDataset(
+                samples=self.samples,
+                ids_path=self.params.dir + f"fold_{self.fold}/test.pkl",
                 desc_tokenizer=self.desc_tokenizer,
                 code_tokenizer=self.code_tokenizer,
                 desc_max_length=self.params.desc_max_length,
@@ -70,3 +76,6 @@ class CodeDescDataModule(pl.LightningDataModule):
             shuffle=False,
             num_workers=self.params.num_workers
         )
+
+    def predict_dataloader(self):
+        return self.test_dataloader()

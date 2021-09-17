@@ -3,7 +3,7 @@ from transformers import BertModel
 
 
 class BertExplainer(LightningModule):
-    """This encoder is used to export Bert attentions after be trained."""
+    """This encoder is used to export Bert attention after be trained."""
 
     def __init__(self, hparams):
         super(BertExplainer, self).__init__()

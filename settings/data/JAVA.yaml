@@ -1,8 +1,7 @@
-# @package _group_
+name: JAVA
+dir: resource/dataset/java/
 
-name: "JAVA_V01"
-
-dir: "../resources/datasets/JAVA_V01/"
+folds: [0,1,2,3,4]
 
 num_train_samples: 1504384
 num_test_samples: 322369

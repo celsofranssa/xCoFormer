@@ -1,6 +1,0 @@
-# @package _group_
-
-name: "CODEBERT_NO_POOL"
-
-predictions:
-  path: "../resources/predictions/CODEBERT_NO_POOL_${data.name}predictions.pt"

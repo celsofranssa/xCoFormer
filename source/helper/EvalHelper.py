@@ -61,7 +61,7 @@ class EvalHelper:
                 )
 
     def load_predictions(self):
-        # load predictions
+        # load prediction
         return torch.load(self.hparams.model.predictions.path)
 
     def init_index(self, predictions):
@@ -94,7 +94,7 @@ class EvalHelper:
 
     def get_ranking(self, k):
 
-        # load predictions
+        # load prediction
         predictions = self.load_predictions()
 
         # index data
@@ -116,7 +116,7 @@ class EvalHelper:
                     "metric": "MRR",
                     "value": self.mrr_at_k(ranking.values(), k, self.hparams.data.num_test_samples),
                     "model": self.hparams.model.name,
-                    "datasets": self.hparams.data.name
+                    "dataset": self.hparams.data.name
                 }
             )
             stats.append(
@@ -125,11 +125,11 @@ class EvalHelper:
                     "metric": "Recall",
                     "value": self.recall_at_k(ranking.values(), k, self.hparams.data.num_test_samples),
                     "model": self.hparams.model.name,
-                    "datasets": self.hparams.data.name
+                    "dataset": self.hparams.data.name
                 }
             )
 
-        stats_path = self.hparams.stats.dir + self.hparams.model.name + "_" + self.hparams.data.name + ".stats"
+        stats_path = self.hparams.stats.dir + self.hparams.model.name + "_" + self.hparams.data.name + ".stat"
         ranking_path = self.hparams.rankings.dir + self.hparams.model.name + "_" + self.hparams.data.name + ".ranking"
 
         self.checkpoint_stats(stats, stats_path)

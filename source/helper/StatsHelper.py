@@ -48,7 +48,7 @@ class EvalHelper:
             stats_file.write(json.dumps(positions))
 
     def load_predictions(self):
-        # load predictions
+        # load prediction
         predictions = torch.load(self.hparams.model.predictions.path)
 
         descs = []
@@ -92,7 +92,7 @@ class EvalHelper:
 
     def rank(self):
 
-        # load predictions
+        # load prediction
         descs, codes = self.load_predictions()
 
         index = self.init_index(codes)
@@ -111,7 +111,7 @@ class EvalHelper:
                     "metric": "MRR",
                     "value": self.mrr_at_k(positions, k, self.hparams.data.test.num_samples),
                     "model": self.hparams.model.name,
-                    "datasets": self.hparams.data.name
+                    "dataset": self.hparams.data.name
                 }
             )
             stats.append(
@@ -120,10 +120,10 @@ class EvalHelper:
                     "metric": "Recall",
                     "value": self.recall_at_k(positions, k, self.hparams.data.test.num_samples),
                     "model": self.hparams.model.name,
-                    "datasets": self.hparams.data.name
+                    "dataset": self.hparams.data.name
                 }
             )
-        stats_path = self.hparams.stats.dir + self.hparams.model.name + "_" + self.hparams.data.name + ".stats"
+        stats_path = self.hparams.stats.dir + self.hparams.model.name + "_" + self.hparams.data.name + ".stat"
         positions_path = self.hparams.stats.dir + self.hparams.model.name + "_" + self.hparams.data.name + ".ranking"
         self.checkpoint_stats(stats, stats_path)
         self.checkpoint_positions(positions, positions_path)

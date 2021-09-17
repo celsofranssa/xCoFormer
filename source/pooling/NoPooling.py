@@ -7,7 +7,7 @@ class NoPooling(LightningModule):
     Performs average pooling on the last hidden-states transformer output.
     """
 
-    def __init__(self, hparms):
+    def __init__(self):
         super(NoPooling, self).__init__()
 
     def forward(self, attention_mask, encoder_outputs):

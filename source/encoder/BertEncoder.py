@@ -1,20 +1,22 @@
 from pytorch_lightning import LightningModule
 from transformers import BertModel
 
-from source.pooling.AveragePooling import AveragePooling
-
-
 class BertEncoder(LightningModule):
     """Encodes the input as embeddings."""
 
-    def __init__(self, hparams):
+    def __init__(self, architecture, output_attentions, pooling):
         super(BertEncoder, self).__init__()
-        self.bert_encoder = BertModel.from_pretrained(
-            hparams.architecture,
-            output_attentions=hparams.output_attentions
+        self.encoder = BertModel.from_pretrained(
+            architecture,
+            output_attentions=output_attentions
         )
-        self.pooling = AveragePooling()
+        self.pooling = pooling
 
-    def forward(self, features):
-        attention_mask = (features > 0).int()
-        return self.bert_encoder(features, attention_mask).pooler_output
+    def forward(self, input_ids):
+        attention_mask = (input_ids > 0).int()
+        encoder_outputs = self.encoder(input_ids, attention_mask)
+
+        return self.pooling(
+            attention_mask,
+            encoder_outputs
+        )

@@ -16,7 +16,7 @@ class TripletLoss(nn.Module):
 
     def forward(self, anchor, positive):
         """
-        Computes the N-Pairs Loss between the target and predictions.
+        Computes the N-Pairs Loss between the target and prediction.
         :param positive:
         :param anchor:
         :param predict: the prediction of the model,

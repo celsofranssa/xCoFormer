@@ -1,0 +1,40 @@
+defaults:
+  - model: BERT_NO_POOL
+  - data: JAVA
+
+tasks: [ "fit" ]
+
+trainer:
+  max_epochs: 16
+  gpus: 1
+  patience: 7
+  min_delta: 0.05
+  precision: 16
+  fast_dev_run: False
+  progress_bar_refresh_rate: 1
+
+log:
+  dir: resource/log/
+
+model_checkpoint:
+  dir: resource/model_checkpoint/
+
+ranking:
+  dir: resource/ranking/
+
+attention:
+  dir: resource/attention
+  sample_id: 0
+
+prediction:
+  fold: 0
+  dir: resource/prediction/${model.name}_${data.name}/
+  write_interval: batch
+
+
+
+
+
+
+
+
