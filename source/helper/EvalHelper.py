@@ -1,16 +1,18 @@
 import json
+from pathlib import Path
 from statistics import mean
 
 import nmslib
 import numpy as np
+import pandas as pd
 import torch
 from omegaconf import OmegaConf
 from tqdm import tqdm
 
 
 class EvalHelper:
-    def __init__(self, hparams):
-        self.hparams = hparams
+    def __init__(self, params):
+        self.params = params
 
     def mrr_at_k(self, positions, k, num_samples):
         """
@@ -48,10 +50,15 @@ class EvalHelper:
         """
         return 1.0 * sum(i <= k for i in positions) / num_samples
 
-    def checkpoint_stats(self, stats, stats_path):
-        with open(stats_path, "w") as stats_file:
-            for data in stats:
-                stats_file.write(f"{json.dumps(data)}\n")
+    def checkpoint_stats(self, stats):
+        """
+        Checkpoints stats on disk.
+        :param stats: dataframe
+        """
+        stats.to_csv(
+            self.params.stat.dir + self.params.model.name + "_" + self.params.data.name + ".stat",
+            sep='\t',index=False,header=True)
+
 
     def checkpoint_ranking(self, ranking, ranking_path):
         with open(ranking_path, "w") as ranking_file:
@@ -60,9 +67,22 @@ class EvalHelper:
                     f"{json.dumps({'idx':idx, 'position': position})}\n"
                 )
 
-    def load_predictions(self):
-        # load prediction
-        return torch.load(self.hparams.model.predictions.path)
+    def load_predictions(self, fold):
+
+        predictions_paths = sorted(
+            Path(f"{self.params.prediction.dir}fold_{fold}/").glob("*.pred")
+        )
+
+        predictions = []
+        for path in tqdm(predictions_paths, desc="Loading predictions"):
+            prediction_batch = torch.load(path)
+            for prediction in prediction_batch:
+                predictions.append({
+                    "idx": prediction["idx"],
+                    "desc_repr": prediction["desc_repr"],
+                    "code_repr": prediction["code_repr"]
+                })
+        return predictions
 
     def init_index(self, predictions):
         M = 30
@@ -92,10 +112,10 @@ class EvalHelper:
                 ranking[target_idx] = 1e9
         return ranking
 
-    def get_ranking(self, k):
+    def get_ranking(self, k, fold):
 
         # load prediction
-        predictions = self.load_predictions()
+        predictions = self.load_predictions(fold)
 
         # index data
         index = self.init_index(predictions)
@@ -105,32 +125,28 @@ class EvalHelper:
 
     def perform_eval(self):
 
+        stats = pd.DataFrame(columns=["fold"])
+        rankings = {}
         thresholds = [1, 5, 10]
-        stats = []
-        ranking = self.get_ranking(k=thresholds[-1])
 
-        for k in thresholds:
-            stats.append(
-                {
-                    "k": k,
-                    "metric": "MRR",
-                    "value": self.mrr_at_k(ranking.values(), k, self.hparams.data.num_test_samples),
-                    "model": self.hparams.model.name,
-                    "dataset": self.hparams.data.name
-                }
-            )
-            stats.append(
-                {
-                    "k": k,
-                    "metric": "Recall",
-                    "value": self.recall_at_k(ranking.values(), k, self.hparams.data.num_test_samples),
-                    "model": self.hparams.model.name,
-                    "dataset": self.hparams.data.name
-                }
-            )
 
-        stats_path = self.hparams.stats.dir + self.hparams.model.name + "_" + self.hparams.data.name + ".stat"
-        ranking_path = self.hparams.rankings.dir + self.hparams.model.name + "_" + self.hparams.data.name + ".ranking"
 
-        self.checkpoint_stats(stats, stats_path)
-        self.checkpoint_ranking(ranking, ranking_path)
+        for fold in self.params.data.folds:
+            ranking = self.get_ranking(k=thresholds[-1], fold=fold)
+
+            for k in thresholds:
+                mrr = self.mrr_at_k(ranking.values(), k, self.params.data.num_test_samples)
+                rcl = self.recall_at_k(ranking.values(), k, self.params.data.num_test_samples)
+                stats.at[fold, f"MRR@{k}"] = mrr
+                stats.at[fold, f"RCL@{k}"] = rcl
+
+            rankings[fold]=ranking
+
+        # update fold colum
+        stats["fold"] = stats.index
+
+
+        self.checkpoint_stats(stats)
+        #self.checkpoint_ranking(rankings)
+
+

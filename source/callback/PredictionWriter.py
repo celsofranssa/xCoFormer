@@ -12,7 +12,6 @@ class PredictionWriter(BasePredictionWriter):
     def __init__(self, params):
         super(PredictionWriter, self).__init__(params.write_interval)
         self.params=params
-        self.predictions = []
 
     def write_on_epoch_end(self, trainer: "pl.Trainer", pl_module: "pl.LightningModule", predictions: Sequence[Any],
                            batch_indices: Optional[Sequence[Any]]) -> None:
@@ -47,6 +46,6 @@ class PredictionWriter(BasePredictionWriter):
         Path(dir).mkdir(parents=True, exist_ok=True)
         torch.save(
             predictions,
-            f"{dir}{dataloader_idx}_{batch_idx}.rpr"
+            f"{dir}{dataloader_idx}_{batch_idx}.pred"
         )
 

@@ -11,6 +11,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping, Learning
 from transformers import AutoTokenizer
 
 from source.DataModule.CoEncoderDataModule import CoEncoderDataModule
+from source.callback.PredictionWriter import PredictionWriter
 from source.helper.EvalHelper import EvalHelper
 from source.helper.ExpHelper import get_sample
 from source.model.CoEncoderModel import CoEncoderModel
@@ -84,12 +85,42 @@ def fit(params):
 
 
 def predict(params):
-    pass
+    for fold in params.data.folds:
+        # data
+        dm = CoEncoderDataModule(
+                params.data,
+                get_tokenizer(params.model.desc_tokenizer),
+                get_tokenizer(params.model.code_tokenizer),
+                fold=fold)
+
+        # model
+        model = CoEncoderModel.load_from_checkpoint(
+            checkpoint_path=f"{params.model_checkpoint.dir}{params.model.name}_{params.data.name}_{fold}.ckpt"
+        )
+
+        params.prediction.fold = fold
+        # trainer
+        trainer = pl.Trainer(
+            gpus=params.trainer.gpus,
+            callbacks=[PredictionWriter(params.prediction)]
+        )
+
+        # predicting
+        dm.prepare_data()
+        dm.setup("predict")
+
+        print(f"Predicting {params.model.name} over {params.data.name} (fold {fold}) with fowling params\n"
+              f"{OmegaConf.to_yaml(params)}\n")
+        trainer.predict(
+            model=model,
+            datamodule=dm,
+
+        )
 
 
-def eval(hparams):
-    print("Evaluating with the following parameters:\n", OmegaConf.to_yaml(hparams))
-    evaluator = EvalHelper(hparams)
+def eval(params):
+    print("Evaluating with the following parameters:\n", OmegaConf.to_yaml(params))
+    evaluator = EvalHelper(params)
     evaluator.perform_eval()
 
 
