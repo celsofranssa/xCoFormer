@@ -1,15 +1,18 @@
 import json
+from pathlib import Path
 from statistics import mean
 
 import nmslib
 import numpy as np
+import pandas as pd
 import torch
 from omegaconf import OmegaConf
+from tqdm import tqdm
 
 
 class EvalHelper:
-    def __init__(self, hparams):
-        self.hparams = hparams
+    def __init__(self, params):
+        self.params = params
 
     def mrr_at_k(self, positions, k, num_samples):
         """
@@ -28,6 +31,15 @@ class EvalHelper:
 
         return rrank / num_samples
 
+    def mrr(self, ranking):
+        """
+        Evaluates the MMR considering only the positions up to k.
+        :param positions:
+        :param num_samples:
+        :return:
+        """
+        return np.mean(ranking)
+
     def recall_at_k(self, positions, k, num_samples):
         """
         Evaluates the Recall considering only the positions up to k
@@ -38,94 +50,100 @@ class EvalHelper:
         """
         return 1.0 * sum(i <= k for i in positions) / num_samples
 
-    def checkpoint_stats(self, stats, stats_path):
-        with open(stats_path, "w") as stats_file:
-            for data in stats:
-                stats_file.write(f"{json.dumps(data)}\n")
+    def checkpoint_stats(self, stats):
+        """
+        Checkpoints stats on disk.
+        :param stats: dataframe
+        """
+        stats.to_csv(
+            self.params.stat.dir + self.params.model.name + "_" + self.params.data.name + ".stat",
+            sep='\t',index=False,header=True)
 
-    def checkpoint_positions(self, positions, positions_path):
-        with open(positions_path, "w") as stats_file:
-            stats_file.write(json.dumps(positions))
 
-    def load_predictions(self):
-        # load prediction
-        predictions = torch.load(self.hparams.model.predictions.path)
+    def checkpoint_ranking(self, ranking):
+        ranking_path=f""
+        with open(ranking_path, "w") as ranking_file:
+            for idx, position in ranking.items():
+                ranking_file.write(
+                    f"{json.dumps({'idx':idx, 'position': position})}\n"
+                )
 
-        descs = []
-        codes = []
+    def load_predictions(self, fold):
 
-        for prediction in predictions:
-            descs.append(prediction["r1"])
-            codes.append(prediction["r2"])
+        predictions_paths = sorted(
+            Path(f"{self.params.prediction.dir}fold_{fold}/").glob("*.pred")
+        )
 
-        return descs, codes
+        predictions = []
+        for path in tqdm(predictions_paths, desc="Loading predictions"):
+            prediction_batch = torch.load(path)
+            for prediction in prediction_batch:
+                predictions.append({
+                    "idx": prediction["idx"],
+                    "desc_repr": prediction["desc_repr"],
+                    "code_repr": prediction["code_repr"]
+                })
+        return predictions
 
-    def init_index(self, codes):
+    def init_index(self, predictions):
+        M = 30
+        efC = 100
+        num_threads = 4
+        index_time_params = {'M': M, 'indexThreadQty': num_threads, 'efConstruction': efC, 'post': 0}
+
         # initialize a new index, using a HNSW index on Cosine Similarity
         index = nmslib.init(method='hnsw', space='cosinesimil')
-        index.addDataPointBatch(codes)
-        index.createIndex()
+
+        for prediction in tqdm(predictions, desc="Indexing"):
+            index.addDataPoint(id=prediction["idx"], data=prediction["code_repr"])
+
+        index.createIndex(index_time_params)
         return index
 
-    def retrieve(self, index, descs, k=100):
+    def retrieve(self, index, predictions, k):
         # retrieve
+        ranking = {}
+        for prediction in tqdm(predictions, desc="Searching"):
+            target_idx = prediction["idx"]
+            ids, distances = index.knnQuery(prediction["desc_repr"], k=k)
+            ids = ids.tolist()
+            if target_idx in ids:
+                ranking[target_idx] = ids.index(target_idx) + 1
+            else:
+                ranking[target_idx] = 1e9
+        return ranking
 
-        neighbours = index.knnQueryBatch(descs, k=k)
-
-        r_rank = []
-        positions = []
-        index_error = 0
-
-        for qid, neighbour in enumerate(neighbours):
-            rids, distances = neighbour
-            try:
-                p = np.where(rids == qid)[0][0]
-                positions.append(p + 1)
-                r_rank.append(1.0 / (p + 1))
-            except:
-                index_error += 1
-                positions.append(100)
-
-        print("Out of Rank: ", index_error)
-        print("MRR: ", mean(r_rank))
-        return positions
-
-    def rank(self):
+    def get_ranking(self, k, fold):
 
         # load prediction
-        descs, codes = self.load_predictions()
+        predictions = self.load_predictions(fold)
 
-        index = self.init_index(codes)
+        # index data
+        index = self.init_index(predictions)
 
-        return self.retrieve(index, descs)
+        # retrieve
+        return self.retrieve(index, predictions, k=k)
 
     def perform_eval(self):
-        thresholds = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
-        stats = []
-        positions = self.rank()
 
-        for k in thresholds:
-            stats.append(
-                {
-                    "k": k,
-                    "metric": "MRR",
-                    "value": self.mrr_at_k(positions, k, self.hparams.data.test.num_samples),
-                    "model": self.hparams.model.name,
-                    "dataset": self.hparams.data.name
-                }
-            )
-            stats.append(
-                {
-                    "k": k,
-                    "metric": "Recall",
-                    "value": self.recall_at_k(positions, k, self.hparams.data.test.num_samples),
-                    "model": self.hparams.model.name,
-                    "dataset": self.hparams.data.name
-                }
-            )
-        stats_path = self.hparams.stats.dir + self.hparams.model.name + "_" + self.hparams.data.name + ".stat"
-        positions_path = self.hparams.stats.dir + self.hparams.model.name + "_" + self.hparams.data.name + ".ranking"
-        self.checkpoint_stats(stats, stats_path)
-        self.checkpoint_positions(positions, positions_path)
+        stats = pd.DataFrame(columns=["fold"])
+        rankings = {}
+        thresholds = [1, 5, 10]
+
+        for fold in self.params.data.folds:
+            ranking = self.get_ranking(k=thresholds[-1], fold=fold)
+
+            for k in thresholds:
+                stats.at[fold, f"MRR@{k}"] = self.mrr_at_k(ranking.values(), k, len(ranking))
+                stats.at[fold, f"RCL@{k}"] = self.recall_at_k(ranking.values(), k, len(ranking))
+
+            rankings[fold]=ranking
+
+        # update fold colum
+        stats["fold"] = stats.index
+
+
+        self.checkpoint_stats(stats)
+        self.checkpoint_ranking(rankings)
 
 

@@ -57,8 +57,8 @@ class CoEncoderModel(LightningModule):
 
         return {
             "idx": idx,
-            "desc_repr": desc_repr,
-            "code_repr": code_repr
+            "desc_rpr": desc_repr,
+            "code_rpr": code_repr
         }
 
     def test_step(self, batch, batch_idx):

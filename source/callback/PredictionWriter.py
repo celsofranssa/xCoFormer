@@ -27,14 +27,14 @@ class PredictionWriter(BasePredictionWriter):
 
         for idx, desc_repr, code_repr in zip(
                 prediction["idx"].tolist(),
-                prediction["desc_repr"].tolist(),
-                prediction["code_repr"].tolist()):
+                prediction["desc_rpr"].tolist(),
+                prediction["code_rpr"].tolist()):
 
 
             predictions.append({
                 "idx": idx,
-                "desc_repr": desc_repr,
-                "code_repr": code_repr
+                "desc_rpr": desc_repr,
+                "code_rpr": code_repr
             })
 
         self._checkpoint(predictions, dataloader_idx, batch_idx)
@@ -46,6 +46,6 @@ class PredictionWriter(BasePredictionWriter):
         Path(dir).mkdir(parents=True, exist_ok=True)
         torch.save(
             predictions,
-            f"{dir}{dataloader_idx}_{batch_idx}.pred"
+            f"{dir}{dataloader_idx}_{batch_idx}.prd"
         )
 
