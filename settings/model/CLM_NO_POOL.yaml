@@ -1,7 +1,7 @@
 name: CLM_NO_POOL
 
 desc_encoder:
-  _target_: source.encoder.BertEncoder.BertEncoder
+  _target_: source.encoder.CLMEncoder.CLMEncoder
   architecture: microsoft/codebert-base
   output_attentions: False
   pooling:

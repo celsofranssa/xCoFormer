@@ -6,23 +6,23 @@ from torch import nn
 class CNNEncoder(LightningModule):
     """Represents a text as a dense vector."""
 
-    def __init__(self, hparams):
+    def __init__(self, vocabulary_size, representation_size, out_channels, kernel_sizes, max_length, pooling):
         super(CNNEncoder, self).__init__()
 
         # embedding layer
         self.embedding = nn.Embedding(
-            num_embeddings=hparams.vocabulary_size,
-            embedding_dim=hparams.representation_size
+            num_embeddings=vocabulary_size,
+            embedding_dim=representation_size
         )
 
-        kernel_sizes = hparams.kernel_sizes
+        kernel_sizes = kernel_sizes
 
         # convolutional layers
         self.convs = nn.ModuleList([
-            self.get_conv_layer(hparams.representation_size, hparams.out_channels, kernel_size, hparams.max_length)
+            self.get_conv_layer(representation_size, out_channels, kernel_size, max_length)
             for kernel_size in kernel_sizes])
 
-        self.linear = nn.Linear(3 * 4000, hparams.representation_size)
+        self.linear = nn.Linear(3 * 4000, representation_size)
 
     def get_conv_layer(self, representation_size, out_channels, kernel_size, sentence_length):
         """
