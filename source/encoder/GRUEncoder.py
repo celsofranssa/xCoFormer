@@ -5,38 +5,34 @@ from pytorch_lightning import LightningModule
 from torch import nn
 
 from source.encoder.EncoderOutput import EncoderOutput
-from source.pooling.AveragePooling import AveragePooling
+
 
 
 class GRUEncoder(LightningModule):
     """Encodes the input as embeddings."""
 
-    def __init__(self, hparams):
+    def __init__(self, vocabulary_size, representation_size, hidden_size, pooling):
         super(GRUEncoder, self).__init__()
 
         self.embedding = nn.Embedding(
-            num_embeddings=hparams.vocabulary_size,
-            embedding_dim=hparams.representation_size
+            num_embeddings=vocabulary_size,
+            embedding_dim=representation_size
         )
 
         self.rnn = torch.nn.GRU(
-            input_size=hparams.representation_size,
-            hidden_size=hparams.hidden_size,
+            input_size=representation_size,
+            hidden_size=hidden_size,
             batch_first=True,
             bidirectional=True)
 
-        self.pooling = self.get_pooling(hparams.pooling, hparams.pooling_hparams)
-
-    @staticmethod
-    def get_pooling(pooling, pooling_hparams):
-        pooling_module, pooling_class = pooling.rsplit('.', 1)
-        pooling_module = importlib.import_module(pooling_module)
-        return getattr(pooling_module, pooling_class)(pooling_hparams)
+        self.pooling = pooling
 
     def forward(self, x):
-        attention_mask = (x > 0).int()
+        attention_mask = (x > 1).int()
         emb_outs = self.embedding(x)
         last_hidden_state, pooler_output = self.rnn(emb_outs)
+
+        print(f"\n\nshape: {last_hidden_state.shape}")
 
         return self.pooling(
             attention_mask,

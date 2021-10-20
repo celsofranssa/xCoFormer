@@ -13,7 +13,7 @@ class NPairsLoss(nn.Module):
         Computes the N-Pairs Loss between the r1 and r2 representations.
         :param r1: Tensor of shape (batch_size, representation_size)
         :param r2: Tensor of shape (batch_size, representation_size)
-        :return: he scalar loss
+        :return: the scalar loss
         """
 
         scores = torch.matmul(r1, r2.t())

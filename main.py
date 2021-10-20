@@ -61,8 +61,6 @@ def fit(params):
         trainer = pl.Trainer(
             fast_dev_run=params.trainer.fast_dev_run,
             max_epochs=params.trainer.max_epochs,
-            limit_train_batches=2,
-            limit_val_batches=2,
             precision=params.trainer.precision,
             gpus=params.trainer.gpus,
             progress_bar_refresh_rate=params.trainer.progress_bar_refresh_rate,

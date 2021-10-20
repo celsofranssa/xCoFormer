@@ -8,7 +8,7 @@ desc_encoder:
     _target_: source.pooling.NoPooling.NoPooling
 
 code_encoder:
-  _target_: source.encoder.BertEncoder.BertEncoder
+  _target_: source.encoder.CLMEncoder.CLMEncoder
   architecture: microsoft/codebert-base
   output_attentions: False
   pooling:
