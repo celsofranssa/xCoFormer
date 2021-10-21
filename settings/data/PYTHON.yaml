@@ -1,4 +1,4 @@
-name: JAVA
+name: PYTHON
 dir: resource/dataset/python/
 
 folds: [0,1,2,3,4]

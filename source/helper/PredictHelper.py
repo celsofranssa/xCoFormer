@@ -20,7 +20,7 @@ class PredictHelper:
             dm = BiEncoderDataModule(
                 self.params.data,
                 self.get_tokenizer(self.params.model.desc_tokenizer),
-                self.params(self.params.model.code_tokenizer),
+                self.get_tokenizer(self.params.model.code_tokenizer),
                 fold=fold)
 
             # model
