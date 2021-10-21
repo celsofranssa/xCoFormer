@@ -4,9 +4,9 @@ from torch import nn
 
 class NPairsLoss(nn.Module):
 
-    def __init__(self, name):
+    def __init__(self, params):
         super(NPairsLoss, self).__init__()
-        self.name = name
+        self.params = params
 
     def forward(self, r1, r2):
         """

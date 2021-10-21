@@ -9,10 +9,10 @@ class TripletLoss(nn.Module):
     and target tensor y which is the identity matrix with shape  [batch_size, batch_size].
     """
 
-    def __init__(self, hparams):
+    def __init__(self, params):
         super(TripletLoss, self).__init__()
         self.triplet_loss = nn.TripletMarginLoss()
-        self.name = hparams.name
+        self.name = params.name
 
     def forward(self, anchor, positive):
         """

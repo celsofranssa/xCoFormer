@@ -7,9 +7,9 @@ class MNRankingLoss(nn.Module):
     Multiple Negatives Ranking Loss.
     """
 
-    def __init__(self, name):
+    def __init__(self, params):
         super(MNRankingLoss, self).__init__()
-        self.scale = 20.0
+        self.params=params
         self.cross_entropy_loss = nn.CrossEntropyLoss()
 
     def cos_sim(self, r1, r2):
@@ -23,6 +23,6 @@ class MNRankingLoss(nn.Module):
 
 
     def forward(self, r1, r2):
-        scores = self.cos_sim(r1, r2) * self.scale
+        scores = self.cos_sim(r1, r2) * self.params.scale
         labels = torch.tensor(range(len(scores)), dtype=torch.long, device=scores.device)  # Example a[i] should match with b[i]
         return self.cross_entropy_loss(scores, labels)

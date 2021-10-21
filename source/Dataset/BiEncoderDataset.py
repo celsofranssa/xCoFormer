@@ -5,12 +5,12 @@ import torch
 from torch.utils.data import Dataset
 
 
-class CoEncoderDataset(Dataset):
+class BiEncoderDataset(Dataset):
     """CodeSearch Dataset.
     """
 
     def __init__(self, samples, ids_path, desc_tokenizer, code_tokenizer, desc_max_length, code_max_length):
-        super(CoEncoderDataset, self).__init__()
+        super(BiEncoderDataset, self).__init__()
         self.samples = samples
         self.desc_tokenizer = desc_tokenizer
         self.code_tokenizer= code_tokenizer

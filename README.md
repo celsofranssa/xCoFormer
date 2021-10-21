@@ -46,7 +46,7 @@ xCoFormer/
 ### 3. Test Run
 The following bash command fits the RNN model over Java dataset using batch_size=128 and a single epoch.
 ```
-python xCoFormer.py tasks=[fit] model=rnn data=java_v01 data.batch_size=128 trainer.max_epochs=1
+python main.py tasks=[fit] model=CLM_NO_POOL data=JAVA data.batch_size=128 trainer.max_epochs=1
 ```
 If all goes well the following output should be produced:
 ```

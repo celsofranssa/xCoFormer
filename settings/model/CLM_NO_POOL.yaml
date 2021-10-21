@@ -22,17 +22,16 @@ desc_tokenizer:
 code_tokenizer:
   architecture: ${model.code_encoder.architecture}
 
-lr: 1e-5
+desc_lr: 2e-5
+code_lr: 1e-5
 base_lr: 1e-7
 max_lr: 1e-3
 weight_decay: 1e-2
 
+desc_frequency_opt: 1
+code_frequency_opt: 1
+
 loss:
   _target_: source.loss.NPairsLoss.NPairsLoss
-  name: N-Pair-Loss
-
-
-
-stat:
-  dir: resource/stat/
-  name: ${model.name}_${data.name}.stat
+  params:
+    name: N-Pair-Loss

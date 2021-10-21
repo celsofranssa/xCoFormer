@@ -4,9 +4,9 @@ from pytorch_lightning import loggers
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from transformers import AutoTokenizer
 
-from source.DataModule.CoEncoderDataModule import CoEncoderDataModule
+from source.DataModule.BiEncoderDataModule import BiEncoderDataModule
 from source.callback.PredictionWriter import PredictionWriter
-from source.model.CoEncoderModel import CoEncoderModel
+from source.model.BiEncoderModel import BiEncoderModel
 
 
 class PredictHelper:
@@ -17,14 +17,14 @@ class PredictHelper:
     def perform_predict(self):
         for fold in self.params.data.folds:
             # data
-            dm = CoEncoderDataModule(
+            dm = BiEncoderDataModule(
                 self.params.data,
                 self.get_tokenizer(self.params.model.desc_tokenizer),
                 self.params(self.params.model.code_tokenizer),
                 fold=fold)
 
             # model
-            model = CoEncoderModel.load_from_checkpoint(
+            model = BiEncoderModel.load_from_checkpoint(
                 checkpoint_path=f"{self.params.model_checkpoint.dir}{self.params.model.name}_{self.params.data.name}_{fold}.ckpt"
             )
 

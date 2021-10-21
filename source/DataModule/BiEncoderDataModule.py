@@ -3,16 +3,16 @@ import pickle
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader
 
-from source.Dataset.CoEncoderDataset import CoEncoderDataset
+from source.Dataset.BiEncoderDataset import BiEncoderDataset
 
 
-class CoEncoderDataModule(pl.LightningDataModule):
+class BiEncoderDataModule(pl.LightningDataModule):
     """
     CodeSearch DataModule
     """
 
     def __init__(self, params, desc_tokenizer, code_tokenizer, fold):
-        super(CoEncoderDataModule, self).__init__()
+        super(BiEncoderDataModule, self).__init__()
         self.params = params
         self.desc_tokenizer = desc_tokenizer
         self.code_tokenizer = code_tokenizer
@@ -25,7 +25,7 @@ class CoEncoderDataModule(pl.LightningDataModule):
     def setup(self, stage=None):
 
         if stage == 'fit':
-            self.train_dataset = CoEncoderDataset(
+            self.train_dataset = BiEncoderDataset(
                 samples=self.samples,
                 ids_path=self.params.dir + f"fold_{self.fold}/train.pkl",
                 desc_tokenizer=self.desc_tokenizer,
@@ -34,7 +34,7 @@ class CoEncoderDataModule(pl.LightningDataModule):
                 code_max_length=self.params.code_max_length
             )
 
-            self.val_dataset = CoEncoderDataset(
+            self.val_dataset = BiEncoderDataset(
                 samples=self.samples,
                 ids_path=self.params.dir + f"fold_{self.fold}/val.pkl",
                 desc_tokenizer=self.desc_tokenizer,
@@ -44,7 +44,7 @@ class CoEncoderDataModule(pl.LightningDataModule):
             )
 
         if stage == 'test' or stage is "predict":
-            self.test_dataset = CoEncoderDataset(
+            self.test_dataset = BiEncoderDataset(
                 samples=self.samples,
                 ids_path=self.params.dir + f"fold_{self.fold}/test.pkl",
                 desc_tokenizer=self.desc_tokenizer,

@@ -4,8 +4,8 @@ from pytorch_lightning import loggers
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from transformers import AutoTokenizer
 
-from source.DataModule.CoEncoderDataModule import CoEncoderDataModule
-from source.model.CoEncoderModel import CoEncoderModel
+from source.DataModule.BiEncoderDataModule import BiEncoderDataModule
+from source.model.BiEncoderModel import BiEncoderModel
 
 
 class FitHelper:
@@ -32,8 +32,8 @@ class FitHelper:
             )
             # Train the ⚡ model
             trainer.fit(
-                model=CoEncoderModel(self.params.model),
-                datamodule=CoEncoderDataModule(
+                model=BiEncoderModel(self.params.model),
+                datamodule=BiEncoderDataModule(
                     self.params.data,
                     self.get_tokenizer(self.params.model.desc_tokenizer),
                     self.get_tokenizer(self.params.model.code_tokenizer),
