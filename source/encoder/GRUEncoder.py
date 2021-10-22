@@ -25,6 +25,8 @@ class GRUEncoder(LightningModule):
             batch_first=True,
             bidirectional=True)
 
+        self.linear=nn.Linear(2*representation_size, representation_size)
+
         self.pooling = pooling
 
     def forward(self, x):
@@ -32,7 +34,7 @@ class GRUEncoder(LightningModule):
         emb_outs = self.embedding(x)
         last_hidden_state, pooler_output = self.rnn(emb_outs)
 
-        print(f"\n\nshape: {last_hidden_state.shape}")
+        last_hidden_state = self.linear(last_hidden_state)
 
         return self.pooling(
             attention_mask,

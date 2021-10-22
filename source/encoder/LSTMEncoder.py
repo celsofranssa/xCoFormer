@@ -11,33 +11,32 @@ from source.pooling.MaxPooling import MaxPooling
 class LSTMEncoder(LightningModule):
     """Encodes the input as embedding. Url article: https://guxd.github.io/papers/deepcs.pdf"""
 
-    def __init__(self, hparams):
+    def __init__(self, vocabulary_size, representation_size, hidden_size, pooling):
         """Set the network paramets."""
         super(LSTMEncoder, self).__init__()
 
         self.embedding = nn.Embedding(
-            num_embeddings=hparams.vocabulary_size,
-            embedding_dim=hparams.representation_size
+            num_embeddings=vocabulary_size,
+            embedding_dim=representation_size
         )
 
         self.lstm = torch.nn.LSTM(
-            input_size=hparams.representation_size,
-            hidden_size=hparams.hidden_size,
+            input_size=representation_size,
+            hidden_size=hidden_size,
             batch_first=True,
             bidirectional=True)
 
-        self.pooling = self.get_pooling(hparams.pooling, hparams.pooling_hparams)
+        self.linear = nn.Linear(2 * representation_size, representation_size)
 
-    @staticmethod
-    def get_pooling(pooling, pooling_hparams):
-        pooling_module, pooling_class = pooling.rsplit('.', 1)
-        pooling_module = importlib.import_module(pooling_module)
-        return getattr(pooling_module, pooling_class)(pooling_hparams)
+        self.pooling = pooling
+
 
     def forward(self, x):
         attention_mask = (x > 0).int()
         emb_outs = self.embedding(x)
         last_hidden_state, pooler_output = self.lstm(emb_outs)
+
+        last_hidden_state = self.linear(last_hidden_state)
 
         return self.pooling(
             attention_mask,

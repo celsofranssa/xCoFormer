@@ -2,7 +2,7 @@ defaults:
   - model: BERT_NO_POOL
   - data: JAVA
 
-tasks: [ "eval" ]
+tasks: [ "fit" ]
 
 trainer:
   max_epochs: 16
