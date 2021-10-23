@@ -31,7 +31,8 @@ class BiEncoderModel(LightningModule):
         code_repr = self.code_encoder(code)
         return desc_repr, code_repr
 
-    def training_step(self, batch, batch_idx, optimizer_idx):
+    def training_step(self, batch, batch_idx, optimizer_idx=0):
+        print(f"batch_idx: {batch_idx}, optimizer_idx: {optimizer_idx}")
         desc, code = batch["desc"], batch["code"]
         desc_repr, code_repr = self(desc, code)
         train_loss = self.loss(desc_repr, code_repr)
@@ -75,6 +76,13 @@ class BiEncoderModel(LightningModule):
         return self.desc_encoder
 
     def configure_optimizers(self):
+        if self.hparams.co_training:
+            return self._configure_ctg_optimizers()
+        else:
+            return self._configure_std_optimizers()
+
+
+    def _configure_ctg_optimizers(self):
         # optimizers
         desc_optimizer = torch.optim.AdamW(self.desc_encoder.parameters(), lr=self.hparams.desc_lr, betas=(0.9, 0.999),
                                            eps=1e-08, weight_decay=self.hparams.weight_decay, amsgrad=True)
@@ -96,6 +104,22 @@ class BiEncoderModel(LightningModule):
         return (
             {"optimizer": desc_optimizer, "lr_scheduler": desc_scheduler, "frequency": self.hparams.desc_frequency_opt},
             {"optimizer": code_optimizer, "lr_scheduler": code_scheduler, "frequency": self.hparams.code_frequency_opt},
+        )
+
+    def _configure_std_optimizers(self):
+        optimizer = torch.optim.AdamW(self.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999),
+                                      eps=1e-08, weight_decay=self.hparams.weight_decay, amsgrad=True)
+
+        # schedulers
+        step_size_up = round(0.03 * self.num_training_steps)
+
+        scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer, mode='triangular2',
+                                                      base_lr=self.hparams.base_lr,
+                                                      max_lr=self.hparams.max_lr, step_size_up=step_size_up,
+                                                      cycle_momentum=False)
+
+        return (
+            {"optimizer": optimizer, "lr_scheduler": scheduler}
         )
 
     @property
