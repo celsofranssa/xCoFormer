@@ -10,21 +10,16 @@ from source.pooling.AveragePooling import AveragePooling
 class NBOWEncoder(LightningModule):
     """Encodes the input as embeddings/neural bag of words."""
 
-    def __init__(self, hparams):
+    def __init__(self, vocabulary_size, representation_size, pooling):
         super(NBOWEncoder, self).__init__()
 
         self.embedding = nn.Embedding(
-            num_embeddings=hparams.vocabulary_size,
-            embedding_dim=hparams.representation_size
+            num_embeddings=vocabulary_size,
+            embedding_dim=representation_size
         )
 
-        self.pooling = self.get_pooling(hparams.pooling, hparams.pooling_hparams)
+        self.pooling = pooling
 
-    @staticmethod
-    def get_pooling(pooling, pooling_hparams):
-        pooling_module, pooling_class = pooling.rsplit('.', 1)
-        pooling_module = importlib.import_module(pooling_module)
-        return getattr(pooling_module, pooling_class)(pooling_hparams)
 
     def forward(self, x):
         attention_mask = (x > 0).int()
