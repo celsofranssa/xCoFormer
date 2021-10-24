@@ -5,7 +5,7 @@ desc_encoder:
   architecture: roberta-base
   output_attentions: False
   pooling:
-    _target_: source.pooling.NoPooling.NoPooling
+    _target_: source.pooling.AveragePooling.AveragePooling
 
 code_encoder:
   _target_: source.encoder.CLMEncoder.CLMEncoder
