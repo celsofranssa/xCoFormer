@@ -1,4 +1,4 @@
-name: BERT_NO_POOL
+name: BERT_CoTNG
 
 desc_encoder:
   _target_: source.encoder.BertEncoder.BertEncoder
@@ -22,11 +22,11 @@ desc_tokenizer:
 code_tokenizer:
   architecture: ${model.code_encoder.architecture}
 
-lr: 1e-5
-desc_lr: 2e-5
-code_lr: 1e-5
-base_lr: 1e-7
-max_lr: 1e-3
+lr: 5e-5
+desc_lr: 5e-5
+code_lr: 5e-5
+base_lr: 5e-6
+max_lr: 5e-3
 weight_decay: 1e-2
 
 co_training: True
@@ -35,8 +35,5 @@ code_frequency_opt: 1
 
 loss:
   _target_: source.loss.NPairsLoss.NPairsLoss
-  name: N-Pair-Loss
-
-stat:
-  dir: resource/stat/
-  name: ${model.name}_${data.name}.stat
+  params:
+    name: N-Pair-Loss

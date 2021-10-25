@@ -1,4 +1,4 @@
-name: CLM_NO_POOL
+name: CLM_CoTNG
 
 desc_encoder:
   _target_: source.encoder.CLMEncoder.CLMEncoder
@@ -22,11 +22,11 @@ desc_tokenizer:
 code_tokenizer:
   architecture: ${model.code_encoder.architecture}
 
-lr: 1e-5
-desc_lr: 2e-5
-code_lr: 1e-5
-base_lr: 1e-7
-max_lr: 1e-3
+lr: 5e-5
+desc_lr: 5e-5
+code_lr: 5e-5
+base_lr: 5e-6
+max_lr: 5e-3
 weight_decay: 1e-2
 
 co_training: True
