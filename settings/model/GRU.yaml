@@ -17,7 +17,7 @@ code_encoder:
     _target_: source.pooling.AveragePooling.AveragePooling
 
 hidden_size: 768
-vocabulary_size: 100000
+vocabulary_size: 55000
 
 desc_tokenizer:
   architecture: microsoft/codebert-base
