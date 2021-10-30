@@ -1,5 +1,5 @@
 defaults:
-  - model: BERT_NO_POOL
+  - model: BERT
   - data: JAVA
 
 tasks: [ "fit" ]
