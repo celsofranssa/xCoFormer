@@ -1,23 +1,27 @@
-# Create a new virtual environment by choosing a Python interpreter
-# and making a ./venv directory to hold it:
-virtualenv -p python3 ./venv
+# activate venv and set Python path
+source /home/celso/projects/venvs/xCoFormer/bin/activate
+export PYTHONPATH=$PATHONPATH:/home/celso/projects/xCoFormer/
 
-# activate the virtual environment using a shell-specific command:
-source ./venv/bin/activate
-
-# install dependecies
-pip install torch==1.9.1+cu111 -f https://download.pytorch.org/whl/torch_stable.html
-pip install -r requirements.txt
-
-# setting python path
-export PYTHONPATH=$PATHONPATH:$PWD
-
-# fit, predict, eval
+# BiLSTM
 python main.py \
   tasks=[fit,predict,eval] \
-  model=CLM \
-  data=JAVA \
+  model=BiLSTM \
+  data=PYTHON \
   data.batch_size=64 \
-  data.folds=[0,1,2,3,4] \
-  data.num_workers=8
+  data.num_workers=64 \
+  trainer.max_epochs=64 \
+  trainer.patience=31 \
+  trainer.min_delta=0.01
+
+# SelfAtt
+python main.py \
+  tasks=[fit,predict,eval] \
+  model=SelfAtt \
+  data=PYTHON \
+  data.batch_size=64 \
+  data.num_workers=64 \
+  trainer.max_epochs=64 \
+  trainer.patience=31 \
+  trainer.min_delta=0.01
+
 

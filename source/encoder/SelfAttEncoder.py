@@ -11,27 +11,21 @@ from source.pooling.AveragePooling import AveragePooling
 class SelfAttEncoder(LightningModule):
     """Encodes the input as embeddings."""
 
-    def __init__(self, hparams):
+    def __init__(self, vocabulary_size, representation_size, num_heads, dropout, pooling):
         super(SelfAttEncoder, self).__init__()
 
         self.value_layer = nn.Embedding(
-            num_embeddings=hparams.vocabulary_size,
-            embedding_dim=hparams.representation_size
+            num_embeddings=vocabulary_size,
+            embedding_dim=representation_size
         )
 
-        self.query_layer = nn.Linear(hparams.representation_size, hparams.representation_size)
-        self.key_layer = nn.Linear(hparams.representation_size, hparams.representation_size)
+        self.query_layer = nn.Linear(representation_size, representation_size)
+        self.key_layer = nn.Linear(representation_size, representation_size)
 
-        self.multihead_attn = torch.nn.MultiheadAttention(hparams.representation_size, hparams.num_heads,
-                                                          dropout=hparams.dropout)
+        self.multihead_attn = torch.nn.MultiheadAttention(representation_size, num_heads,
+                                                          dropout=dropout)
 
-        self.pooling = self.get_pooling(hparams.pooling, hparams.pooling_hparams)
-
-    @staticmethod
-    def get_pooling(pooling, pooling_hparams):
-        pooling_module, pooling_class = pooling.rsplit('.', 1)
-        pooling_module = importlib.import_module(pooling_module)
-        return getattr(pooling_module, pooling_class)(pooling_hparams)
+        self.pooling = pooling
 
     def forward(self, x):
         attention_mask = (x > 0).int()
@@ -42,7 +36,6 @@ class SelfAttEncoder(LightningModule):
 
         last_hidden_state, pooler_output = self.multihead_attn(query, key, value)
         last_hidden_state = torch.transpose(last_hidden_state, 0, 1)
-
 
         return self.pooling(
             attention_mask,

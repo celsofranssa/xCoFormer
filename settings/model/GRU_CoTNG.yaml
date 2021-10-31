@@ -1,7 +1,7 @@
-name: BiLSTM
+name: GRU_CoTNG
 
 desc_encoder:
-  _target_: source.encoder.BiLSTMEncoder.BiLSTMEncoder
+  _target_: source.encoder.GRUEncoder.GRUEncoder
   vocabulary_size: ${model.vocabulary_size}
   representation_size: ${model.hidden_size}
   hidden_size: ${model.hidden_size}
@@ -9,7 +9,7 @@ desc_encoder:
     _target_: source.pooling.AveragePooling.AveragePooling
 
 code_encoder:
-  _target_: source.encoder.BiLSTMEncoder.BiLSTMEncoder
+  _target_: source.encoder.GRUEncoder.GRUEncoder
   vocabulary_size: ${model.vocabulary_size}
   representation_size: ${model.hidden_size}
   hidden_size: ${model.hidden_size}
@@ -32,7 +32,7 @@ base_lr: 5e-6
 max_lr: 5e-3
 weight_decay: 1e-2
 
-co_training: False
+co_training: True
 desc_frequency_opt: 1
 code_frequency_opt: 1
 
