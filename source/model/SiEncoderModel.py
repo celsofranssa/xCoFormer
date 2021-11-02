@@ -16,8 +16,7 @@ class SiEncoderModel(LightningModule):
         self.save_hyperparameters(hparams)
 
         # encoders
-        self.desc_encoder = instantiate(hparams.desc_encoder)
-        self.code_encoder = instantiate(hparams.code_encoder)
+        self.encoder = instantiate(hparams.desc_encoder)
 
         # loss function
         self.loss = instantiate(hparams.loss)
@@ -27,8 +26,8 @@ class SiEncoderModel(LightningModule):
 
 
     def forward(self, desc, code):
-        desc_repr = self.desc_encoder(desc)
-        code_repr = self.code_encoder(code)
+        desc_repr = self.encoder(desc)
+        code_repr = self.encoder(code)
         return desc_repr, code_repr
 
     def training_step(self, batch, batch_idx):
@@ -68,11 +67,9 @@ class SiEncoderModel(LightningModule):
     def test_epoch_end(self, outs):
         self.mrr.compute()
 
-    def get_desc_encoder(self):
-        return self.desc_encoder
+    def get_encoder(self):
+        return self.encoder
 
-    def get_code_encoder(self):
-        return self.desc_encoder
 
     def configure_optimizers(self):
         # optimizers
@@ -86,8 +83,10 @@ class SiEncoderModel(LightningModule):
                                                            max_lr=self.hparams.max_lr, step_size_up=step_size_up,
                                                            cycle_momentum=False)
 
-
-        return optimizer, scheduler
+        return {
+            "optimizer": optimizer,
+            "lr_scheduler": scheduler
+        }
 
     @property
     def num_training_steps(self) -> int:
