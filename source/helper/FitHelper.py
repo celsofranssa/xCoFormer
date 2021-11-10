@@ -9,14 +9,13 @@ from source.model.BiEncoderModel import BiEncoderModel
 
 
 class FitHelper:
-    
+
     def __init__(self, params):
-        self.params=params
+        self.params = params
 
     def perform_fit(self):
         for fold in self.params.data.folds:
-            print(f"Fitting {self.params.model.name} over {self.params.data.name} (fold {fold}) with fowling self.params\n"
-                  f"{OmegaConf.to_yaml(self.params)}\n")
+
             # Initialize a trainer
             trainer = pl.Trainer(
                 fast_dev_run=self.params.trainer.fast_dev_run,
@@ -30,14 +29,24 @@ class FitHelper:
                     self.get_early_stopping_callback(self.params),  # early_stopping_callback
                 ]
             )
+
+            # datamodule
+            datamodule = BiEncoderDataModule(
+                self.params.data,
+                self.get_tokenizer(self.params.model.desc_tokenizer),
+                self.get_tokenizer(self.params.model.code_tokenizer),
+                fold=fold)
+
+            # model
+            model = BiEncoderModel(self.params.model)
+
             # Train the ⚡ model
+            print(
+                f"Fitting {self.params.model.name} over {self.params.data.name} (fold {fold}) with fowling self.params\n"
+                f"{OmegaConf.to_yaml(self.params)}\n")
             trainer.fit(
-                model=BiEncoderModel(self.params.model),
-                datamodule=BiEncoderDataModule(
-                    self.params.data,
-                    self.get_tokenizer(self.params.model.desc_tokenizer),
-                    self.get_tokenizer(self.params.model.code_tokenizer),
-                    fold=fold)
+                model=model,
+                datamodule=datamodule
             )
 
     def get_logger(self, params, fold):
@@ -68,6 +77,7 @@ class FitHelper:
         tokenizer = AutoTokenizer.from_pretrained(
             params.architecture
         )
-        if params.architecture == "gpt2":
+        if "gpt" in params.architecture:
             tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+            params.pad = tokenizer.convert_tokens_to_ids("[PAD]")
         return tokenizer
