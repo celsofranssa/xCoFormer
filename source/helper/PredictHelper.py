@@ -46,10 +46,12 @@ class PredictHelper:
                 datamodule=dm,
 
             )
+
     def get_tokenizer(self, params):
         tokenizer = AutoTokenizer.from_pretrained(
             params.architecture
         )
-        if params.architecture == "gpt2":
+        if "gpt" in params.architecture:
             tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+            params.pad = tokenizer.convert_tokens_to_ids("[PAD]")
         return tokenizer
