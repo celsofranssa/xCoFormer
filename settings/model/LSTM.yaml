@@ -1,7 +1,7 @@
-name: BiLSTM
+name: LSTM
 
 desc_encoder:
-  _target_: source.encoder.BiLSTMEncoder.BiLSTMEncoder
+  _target_: source.encoder.LSTMEncoder.LSTMEncoder
   vocabulary_size: ${model.vocabulary_size}
   representation_size: ${model.hidden_size}
   hidden_size: ${model.hidden_size}
@@ -9,7 +9,7 @@ desc_encoder:
     _target_: source.pooling.AveragePooling.AveragePooling
 
 code_encoder:
-  _target_: source.encoder.BiLSTMEncoder.BiLSTMEncoder
+  _target_: source.encoder.LSTMEncoder.LSTMEncoder
   vocabulary_size: ${model.vocabulary_size}
   representation_size: ${model.hidden_size}
   hidden_size: ${model.hidden_size}

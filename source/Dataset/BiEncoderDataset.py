@@ -13,9 +13,9 @@ class BiEncoderDataset(Dataset):
         super(BiEncoderDataset, self).__init__()
         self.samples = samples
         self.desc_tokenizer = desc_tokenizer
-        self.code_tokenizer= code_tokenizer
-        self.desc_max_length= desc_max_length
-        self.code_max_length=code_max_length
+        self.code_tokenizer = code_tokenizer
+        self.desc_max_length = desc_max_length
+        self.code_max_length = code_max_length
         self._load_ids(ids_path)
 
     def _load_ids(self, ids_path):

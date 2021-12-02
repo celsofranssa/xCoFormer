@@ -7,7 +7,6 @@ from torch import nn
 from source.encoder.EncoderOutput import EncoderOutput
 
 
-
 class GRUEncoder(LightningModule):
     """Encodes the input as embeddings."""
 
@@ -25,7 +24,7 @@ class GRUEncoder(LightningModule):
             batch_first=True,
             bidirectional=True)
 
-        self.linear=nn.Linear(2*representation_size, representation_size)
+        self.linear = nn.Linear(2 * representation_size, representation_size)
 
         self.pooling = pooling
 

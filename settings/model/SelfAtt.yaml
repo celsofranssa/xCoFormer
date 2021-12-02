@@ -1,4 +1,4 @@
-name: SelffAtt
+name: SelfAtt
 
 desc_encoder:
   _target_: source.encoder.SelfAttEncoder.SelfAttEncoder

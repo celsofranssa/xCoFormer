@@ -20,6 +20,7 @@ class FitHelper:
             trainer = pl.Trainer(
                 fast_dev_run=self.params.trainer.fast_dev_run,
                 max_epochs=self.params.trainer.max_epochs,
+                max_steps=self.params.trainer.max_steps,
                 precision=self.params.trainer.precision,
                 gpus=self.params.trainer.gpus,
                 progress_bar_refresh_rate=self.params.trainer.progress_bar_refresh_rate,
