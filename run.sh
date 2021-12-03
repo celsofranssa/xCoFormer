@@ -9,7 +9,7 @@ python main.py \
   data=PYTHON \
   data.folds=[0] \
   data.batch_size=128 \
-  data.num_workers=8 \
+  data.num_workers=12 \
   trainer.max_epochs=16 \
   trainer.patience=7 \
   trainer.min_delta=0.03

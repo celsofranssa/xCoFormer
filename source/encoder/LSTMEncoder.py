@@ -1,5 +1,3 @@
-import importlib
-
 import torch.nn
 from pytorch_lightning import LightningModule
 from torch import nn
@@ -7,11 +5,11 @@ from torch import nn
 from source.encoder.EncoderOutput import EncoderOutput
 
 
-class BiLSTMEncoder(LightningModule):
+class LSTMEncoder(LightningModule):
     """Encodes the input as embeddings."""
 
     def __init__(self, vocabulary_size, representation_size, hidden_size, pooling):
-        super(BiLSTMEncoder, self).__init__()
+        super(LSTMEncoder, self).__init__()
 
         self.embedding = nn.Embedding(
             num_embeddings=vocabulary_size,

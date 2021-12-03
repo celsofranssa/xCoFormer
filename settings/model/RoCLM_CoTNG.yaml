@@ -1,4 +1,4 @@
-name: RoCLM
+name: RoCLM_CoTNG
 
 desc_encoder:
   _target_: source.encoder.RoBERTaEncoder.RoBERTaEncoder

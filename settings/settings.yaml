@@ -12,7 +12,6 @@ trainer:
   precision: 16
   fast_dev_run: False
   progress_bar_refresh_rate: 1
-  max_steps: None
 
 log:
   dir: resource/log/
