@@ -6,6 +6,6 @@ transformers~=4.12.3
 sentencepiece~=0.1.96
 hydra-core~=1.1.0
 nmslib~=2.1.1
-pytorch-lightning~=1.4.1
+pytorch-lightning~=1.5.10
 pandas~=1.1.5
 torchmetrics~=0.5.1
