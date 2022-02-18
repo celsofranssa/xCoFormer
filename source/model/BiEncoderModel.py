@@ -128,9 +128,3 @@ class BiEncoderModel(LightningModule):
         max_epochs = self.trainer.max_epochs
         return steps_per_epochs * max_epochs
 
-    @property
-    def num_training_steps(self) -> int:
-        """Total training steps inferred from datamodule and number of epochs."""
-        steps_per_epochs = len(self.train_dataloader()) / self.trainer.accumulate_grad_batches
-        max_epochs = self.trainer.max_epochs
-        return steps_per_epochs * max_epochs
