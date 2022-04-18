@@ -27,7 +27,7 @@ deactivate
 ```
 
 ### 2. Datasets
-After downloading the datasets from [Kaggle Datasets](https://www.kaggle.com/aldebbaran/code-search-datasets ), it should be placed inside the `resources/datasets/` folder as shown below:
+After downloading the datasets from [Kaggle Datasets](https://www.kaggle.com/datasets/celsofranssa/xcoformer-datasets), it should be placed inside the `resources/datasets/` folder as shown below:
 
 ```
 xCoFormer/
