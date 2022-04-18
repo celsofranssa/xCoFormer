@@ -27,7 +27,11 @@ deactivate
 ```
 
 ### 2. Datasets
-After downloading the datasets from [Kaggle Datasets](https://www.kaggle.com/datasets/celsofranssa/xcoformer-datasets), it should be placed inside the `resources/datasets/` folder as shown below:
+Download the datasets from [kaggle](https://www.kaggle.com/datasets/celsofranssa/xcoformer-datasets):
+```
+kaggle datasets download celsofranssa/xcoformer-datasets -p resource/dataset/ --unzip
+```
+After downloading the datasets from it should be placed inside the `resources/datasets/` folder as shown below:
 
 ```
 xCoFormer/
@@ -77,4 +81,11 @@ DATALOADER:0 TEST RESULTS
  'val_loss': tensor(5.5390, device='cuda:0'),
  'val_mrr': tensor(0.0410)}
 --------------------------------------------------------------------------------
+```
+
+### Troubleshoot
+Pytorch 1.10.2 still has some issues with Nvidia CUDA 11.3 on Ubuntu 20.04. Therefore, it is recommended to install directly from the source.
+```
+pip uninstall torch
+pip install torch==1.10.2 --extra-index-url https://download.pytorch.org/whl/cu113
 ```
