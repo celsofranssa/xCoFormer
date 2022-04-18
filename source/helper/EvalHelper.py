@@ -5,6 +5,7 @@ import nmslib
 import numpy as np
 import pandas as pd
 import torch
+from omegaconf import OmegaConf
 from tqdm import tqdm
 
 
@@ -55,8 +56,7 @@ class EvalHelper:
         """
         stats.to_csv(
             self.params.stat.dir + self.params.model.name + "_" + self.params.data.name + ".stat",
-            sep='\t',index=False,header=True)
-
+            sep='\t', index=False, header=True)
 
     def checkpoint_ranking(self, ranking):
         ranking_path = f"{self.params.ranking.dir}" \
@@ -123,18 +123,20 @@ class EvalHelper:
         thresholds = [1, 5, 10]
 
         for fold in self.params.data.folds:
+
+            print(
+                f"Evaluating {self.params.model.name} over {self.params.data.name} (fold {fold}) with fowling params\n"
+                f"{OmegaConf.to_yaml(self.params)}\n")
             ranking = self.get_ranking(k=thresholds[-1], fold=fold)
 
             for k in thresholds:
                 stats.at[fold, f"MRR@{k}"] = self.mrr_at_k(ranking.values(), k, len(ranking))
                 stats.at[fold, f"RCL@{k}"] = self.recall_at_k(ranking.values(), k, len(ranking))
 
-            rankings[fold]=ranking
+            rankings[fold] = ranking
 
         # update fold colum
         stats["fold"] = stats.index
 
         self.checkpoint_stats(stats)
         self.checkpoint_ranking(rankings)
-
-

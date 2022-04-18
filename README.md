@@ -44,9 +44,9 @@ xCoFormer/
 ```
 
 ### 3. Test Run
-The following bash command fits the RNN model over Java dataset using batch_size=128 and a single epoch.
+The following bash command fits the BERT encoder over Java dataset using batch_size=128 and a single epoch.
 ```
-python main.py tasks=[fit] model=CLM_NO_POOL data=JAVA data.batch_size=128 trainer.max_epochs=1
+python main.py tasks=[fit] model=BERT data=JAVA data.batch_size=128 trainer.max_epochs=1
 ```
 If all goes well the following output should be produced:
 ```
@@ -59,9 +59,9 @@ LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
 
   | Name       | Type                         | Params
 ------------------------------------------------------------
-0 | x1_encoder | RNNEncoder                   | 45.5 M
-1 | x2_encoder | RNNEncoder                   | 45.5 M
-2 | loss_fn    | MultipleNegativesRankingLoss | 0     
+0 | x1_encoder | BERTEncoder                   | 45.5 M
+1 | x2_encoder | BERTEncoder                   | 45.5 M
+2 | loss_fn    | NPairLoss | 0     
 3 | mrr        | MRRMetric                    | 0     
 ------------------------------------------------------------
 91.0 M    Trainable params

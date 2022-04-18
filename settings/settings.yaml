@@ -1,6 +1,6 @@
 defaults:
-  - model: BERT
-  - data: JAVA
+  - model: CLM_CoTNG
+  - data: PYTHON
 
 tasks: [ "fit" ]
 
@@ -32,6 +32,10 @@ prediction:
   dir: resource/prediction/${model.name}_${data.name}/
   fold: 0
   write_interval: batch
+
+tsne:
+  dir: resource/tsne/${model.name}_${data.name}/
+  fold_id: 0
 
 stat:
   dir: resource/stat/
