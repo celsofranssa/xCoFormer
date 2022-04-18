@@ -61,12 +61,12 @@ TPU available: None, using: 0 TPU cores
 LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
 [2020-12-31 13:44:42,967][lightning][INFO] - LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
 
-  | Name       | Type                         | Params
+  | Name         | Type                          | Params
 ------------------------------------------------------------
-0 | desc_encoder | BERTEncoder                   | 45.5 M
-1 | code_encoder | BERTEncoder                   | 45.5 M
-2 | loss_fn    | NPairLoss | 0     
-3 | mrr        | MRRMetric                    | 0     
+0 | desc_encoder | BERTEncoder                   | 109 M
+1 | code_encoder | BERTEncoder                   | 109 M
+2 | loss_fn      | NPairLoss                     | 0     
+3 | mrr          | MRRMetric                     | 0     
 ------------------------------------------------------------
 91.0 M    Trainable params
 
