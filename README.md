@@ -63,8 +63,8 @@ LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
 
   | Name       | Type                         | Params
 ------------------------------------------------------------
-0 | x1_encoder | BERTEncoder                   | 45.5 M
-1 | x2_encoder | BERTEncoder                   | 45.5 M
+0 | desc_encoder | BERTEncoder                   | 45.5 M
+1 | code_encoder | BERTEncoder                   | 45.5 M
 2 | loss_fn    | NPairLoss | 0     
 3 | mrr        | MRRMetric                    | 0     
 ------------------------------------------------------------
