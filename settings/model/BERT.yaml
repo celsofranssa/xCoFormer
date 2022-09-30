@@ -25,15 +25,24 @@ code_tokenizer:
 lr: 5e-5
 desc_lr: 5e-5
 code_lr: 5e-5
-base_lr: 5e-6
-max_lr: 5e-3
 weight_decay: 1e-2
 
-co_training: False
+tag_training: False
 desc_frequency_opt: 1
 code_frequency_opt: 1
 
 loss:
-  _target_: source.loss.NPairsLoss.NPairsLoss
+  _target_: source.loss.NTXentLoss.NTXentLoss
   params:
-    name: N-Pair-Loss
+    name: NTXentLoss
+    miner:
+      relevance_map:
+        dir: ${data.dir}
+    criterion:
+      temperature: 0.07
+
+metric:
+  relevance_map:
+    dir: ${data.dir}
+  num_nearest_neighbors: 10
+  index: ${eval.index}

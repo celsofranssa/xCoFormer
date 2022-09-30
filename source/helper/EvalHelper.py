@@ -97,12 +97,12 @@ class EvalHelper:
         ranking = {}
         for prediction in tqdm(predictions, desc="Searching"):
             target_idx = prediction["idx"]
-            ids, distances = index.knnQuery(prediction["desc_rpr"], k=k)
+            ids, distances = index.knnQuery(prediction["desc_rpr"], k=10000)
             ids = ids.tolist()
             if target_idx in ids:
-                ranking[target_idx] = ids.index(target_idx) + 1
+                ranking[target_idx] = ids.index(target_idx)
             else:
-                ranking[target_idx] = 1e9
+                ranking[target_idx] = 10000
         return ranking
 
     def get_ranking(self, k, fold):

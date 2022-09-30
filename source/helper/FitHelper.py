@@ -1,11 +1,11 @@
 from omegaconf import OmegaConf
 import pytorch_lightning as pl
-from pytorch_lightning import loggers
+from pytorch_lightning import loggers, seed_everything
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from transformers import AutoTokenizer
 
-from source.DataModule.BiEncoderDataModule import BiEncoderDataModule
-from source.model.BiEncoderModel import BiEncoderModel
+from source.DataModule.DescCodeDataModule import DescCodeDataModule
+from source.model.DescCodeModel import DescCodeModel
 
 
 class FitHelper:
@@ -14,8 +14,9 @@ class FitHelper:
         self.params = params
 
     def perform_fit(self):
-        for fold in self.params.data.folds:
+        seed_everything(42, workers=True)
 
+        for fold in self.params.data.folds:
             # Initialize a trainer
             trainer = pl.Trainer(
                 fast_dev_run=self.params.trainer.fast_dev_run,
@@ -27,18 +28,19 @@ class FitHelper:
                 callbacks=[
                     self.get_model_checkpoint_callback(self.params, fold),  # checkpoint_callback
                     self.get_early_stopping_callback(self.params),  # early_stopping_callback
-                ]
+                ],
+                deterministic=True
             )
 
             # datamodule
-            datamodule = BiEncoderDataModule(
+            datamodule = DescCodeDataModule(
                 self.params.data,
                 self.get_tokenizer(self.params.model.desc_tokenizer),
                 self.get_tokenizer(self.params.model.code_tokenizer),
                 fold=fold)
 
             # model
-            model = BiEncoderModel(self.params.model)
+            model = DescCodeModel(self.params.model)
 
             # Train the ⚡ model
             print(

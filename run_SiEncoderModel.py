@@ -10,10 +10,10 @@ from pytorch_lightning import loggers
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping, LearningRateMonitor
 from transformers import AutoTokenizer
 
-from source.DataModule.BiEncoderDataModule import BiEncoderDataModule
+from source.DataModule.DescCodeDataModule import DescCodeDataModule
 from source.callback.PredictionWriter import PredictionWriter
 from source.helper.EvalHelper import EvalHelper
-from source.model.BiEncoderModel import BiEncoderModel
+from source.model.DescCodeModel import DescCodeModel
 from source.model.SiEncoderModel import SiEncoderModel
 
 
@@ -73,7 +73,7 @@ def fit(params):
         # Train the ⚡ model
         trainer.fit(
             model=SiEncoderModel(params.model),
-            datamodule=BiEncoderDataModule(
+            datamodule=DescCodeDataModule(
                 params.data,
                 get_tokenizer(params.model.desc_tokenizer),
                 get_tokenizer(params.model.code_tokenizer),
@@ -84,7 +84,7 @@ def fit(params):
 def predict(params):
     for fold in params.data.folds:
         # data
-        dm = BiEncoderDataModule(
+        dm = DescCodeDataModule(
             params.data,
             get_tokenizer(params.model.desc_tokenizer),
             get_tokenizer(params.model.code_tokenizer),

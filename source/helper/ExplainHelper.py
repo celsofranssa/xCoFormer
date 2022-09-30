@@ -7,8 +7,8 @@ from pytorch_lightning import loggers
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from transformers import AutoTokenizer
 
-from source.DataModule.BiEncoderDataModule import BiEncoderDataModule
-from source.model.BiEncoderModel import BiEncoderModel
+from source.DataModule.DescCodeDataModule import DescCodeDataModule
+from source.model.DescCodeModel import DescCodeModel
 
 
 class ExplainHelper:
@@ -19,7 +19,7 @@ class ExplainHelper:
     def perform_explain(self):
         print("using the following parameters:\n", OmegaConf.to_yaml(self.params))
         # override some of the params with new values
-        model = BiEncoderModel.load_from_checkpoint(
+        model = DescCodeModel.load_from_checkpoint(
             checkpoint_path=self.params.model_checkpoint.dir + self.params.model.name + "_" + self.params.data.name + ".ckpt",
             **self.params.model
         )

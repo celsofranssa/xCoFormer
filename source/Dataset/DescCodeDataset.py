@@ -5,12 +5,12 @@ import torch
 from torch.utils.data import Dataset
 
 
-class BiEncoderDataset(Dataset):
+class DescCodeDataset(Dataset):
     """CodeSearch Dataset.
     """
 
     def __init__(self, samples, ids_path, desc_tokenizer, code_tokenizer, desc_max_length, code_max_length):
-        super(BiEncoderDataset, self).__init__()
+        super(DescCodeDataset, self).__init__()
         self.samples = samples
         self.desc_tokenizer = desc_tokenizer
         self.code_tokenizer = code_tokenizer
@@ -25,10 +25,12 @@ class BiEncoderDataset(Dataset):
     def _encode(self, sample):
         return {
             "idx": sample["idx"],
+            "desc_idx": sample["desc_idx"],
             "desc": torch.tensor(
                 self.desc_tokenizer.encode(text=sample["desc"], max_length=self.desc_max_length, padding="max_length",
                                            truncation=True)
             ),
+            "code_idx": sample["code_idx"],
             "code": torch.tensor(
                 self.code_tokenizer.encode(text=sample["code"], max_length=self.code_max_length, padding="max_length",
                                            truncation=True)

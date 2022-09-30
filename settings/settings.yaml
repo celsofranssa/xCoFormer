@@ -1,5 +1,6 @@
 defaults:
-  - model: CLM_CoTNG
+  - _self_
+  - model: BERT
   - data: PYTHON
 
 tasks: [ "fit" ]
@@ -7,13 +8,11 @@ tasks: [ "fit" ]
 trainer:
   max_epochs: 16
   gpus: 1
-  patience: 7
-  min_delta: 0.03
-  precision: 16
+  patience: 16
+  min_delta: 0.0001
+  precision: 32
   fast_dev_run: False
   progress_bar_refresh_rate: 1
-
-
 
 log:
   dir: resource/log/
@@ -33,12 +32,16 @@ prediction:
   fold: 0
   write_interval: batch
 
-tsne:
-  dir: resource/tsne/${model.name}_${data.name}/
-  fold_id: 0
-
-stat:
-  dir: resource/stat/
+eval:
+  metrics: ["mrr","ndcg","precision","recall"]
+  thresholds: [1,5,10]
+  num_nearest_neighbors: 10
+  label_cls: ["all", "full", "few", "tail"]
+  index:
+    M: 256
+    indexThreadQty: ${data.num_workers}
+    efConstruction: 2048
+    post: 2
 
 
 

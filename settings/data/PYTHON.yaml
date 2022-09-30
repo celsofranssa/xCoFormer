@@ -1,9 +1,9 @@
 name: PYTHON
-dir: resource/dataset/python/
+dir: resource/dataset/PYTHON/
 
 folds: [0,1,2,3,4]
 
-desc_max_length: 16
+desc_max_length: 64
 code_max_length: 128
 
 batch_size: 64
