@@ -23,8 +23,8 @@ code_tokenizer:
   architecture: ${model.code_encoder.architecture}
 
 lr: 5e-5
-desc_lr: 5e-5
-code_lr: 5e-5
+desc_lr: 3e-6
+code_lr: 3e-6
 weight_decay: 1e-2
 
 tag_training: True

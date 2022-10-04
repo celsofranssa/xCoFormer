@@ -5,6 +5,8 @@ from source.helper.EvalHelper import EvalHelper
 from source.helper.ExplainHelper import ExplainHelper
 from source.helper.FitHelper import FitHelper
 from source.helper.PredictHelper import PredictHelper
+from source.helper.ZSPredictHelper import ZSPredictHelper
+
 
 def fit(params):
     fit_helper = FitHelper(params)
@@ -22,6 +24,12 @@ def explain(params):
     explain_helper = ExplainHelper(params)
     explain_helper.perform_explain()
 
+
+def zs_predict(params):
+    zs_predict_helper = ZSPredictHelper(params)
+    zs_predict_helper.perform_predict()
+
+
 @hydra.main(config_path="settings", config_name="settings.yaml", version_base=None)
 def perform_tasks(params):
     os.chdir(hydra.utils.get_original_cwd())
@@ -31,6 +39,9 @@ def perform_tasks(params):
 
     if "predict" in params.tasks:
         predict(params)
+
+    if "zs_predict" in params.tasks:
+        zs_predict(params)
 
     if "eval" in params.tasks:
         eval(params)

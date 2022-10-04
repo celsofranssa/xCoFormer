@@ -18,5 +18,6 @@ class NTXentLoss(nn.Module):
         Computes the NTXentLoss.
         """
         miner_outs = self.miner.mine(desc_ids=desc_idx, code_ids=torch.flatten(code_idx))
+        #print(f"miner out:\n {miner_outs}\n")
         return self.criterion(desc_rpr, None, miner_outs, code_rpr, None)
 

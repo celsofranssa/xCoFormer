@@ -25,15 +25,19 @@ class PredictionWriter(BasePredictionWriter):
 
         predictions = []
 
-        for idx, desc_repr, code_repr in zip(
+        for idx, desc_idx, desc_repr, code_idx, code_repr in zip(
                 prediction["idx"].tolist(),
+                prediction["desc_idx"].tolist(),
                 prediction["desc_rpr"].tolist(),
+                prediction["code_idx"].tolist(),
                 prediction["code_rpr"].tolist()):
 
 
             predictions.append({
                 "idx": idx,
+                "desc_idx": desc_idx,
                 "desc_rpr": desc_repr,
+                "code_idx": code_idx,
                 "code_rpr": code_repr
             })
 

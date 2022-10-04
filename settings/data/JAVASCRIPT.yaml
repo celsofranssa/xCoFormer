@@ -1,0 +1,10 @@
+name: JAVASCRIPT
+dir: resource/dataset/JAVASCRIPT/
+
+folds: [0,1,2,3,4]
+
+desc_max_length: 64
+code_max_length: 128
+
+batch_size: 64
+num_workers: 12

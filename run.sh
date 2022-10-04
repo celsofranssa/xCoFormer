@@ -1,12 +1,12 @@
 # activate venv and set Python path
-source ~/projects/venvs/xCoFormer_EMTC/bin/activate
+source ~/projects/venvs/xCoFormer/bin/activate
 export PYTHONPATH=$PATHONPATH:~/projects/xCoFormer/
 
-# BERT PYTHON
+# CLM_TaG over JAVASCRIPT with LR
 python main.py \
-  tasks=[fit] \
-  model=BERT_TaG \
-  data=PYTHON \
+  tasks=[zs_predict] \
+  model=ZS_CLM \
+  data=JAVASCRIPT \
   data.folds=[0]
 
 
