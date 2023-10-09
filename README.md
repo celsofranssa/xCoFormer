@@ -82,10 +82,3 @@ DATALOADER:0 TEST RESULTS
  'val_mrr': tensor(0.0410)}
 --------------------------------------------------------------------------------
 ```
-
-### Troubleshoot
-Pytorch 1.10.2 still has some issues with Nvidia CUDA 11.3 on Ubuntu 20.04. Therefore, it is recommended to install directly from the source.
-```
-pip uninstall torch
-pip install torch==1.10.2 --extra-index-url https://download.pytorch.org/whl/cu113
-```

@@ -6,21 +6,26 @@ from source.helper.ExplainHelper import ExplainHelper
 from source.helper.FitHelper import FitHelper
 from source.helper.PredictHelper import PredictHelper
 
+
 def fit(params):
     fit_helper = FitHelper(params)
     fit_helper.perform_fit()
+
 
 def predict(params):
     predict_helper = PredictHelper(params)
     predict_helper.perform_predict()
 
+
 def eval(params):
     eval_helper = EvalHelper(params)
     eval_helper.perform_eval()
 
+
 def explain(params):
     explain_helper = ExplainHelper(params)
     explain_helper.perform_explain()
+
 
 @hydra.main(config_path="settings", config_name="settings.yaml")
 def perform_tasks(params):
@@ -37,6 +42,7 @@ def perform_tasks(params):
 
     if "explain" in params.tasks:
         explain(params)
+
 
 if __name__ == '__main__':
     perform_tasks()
