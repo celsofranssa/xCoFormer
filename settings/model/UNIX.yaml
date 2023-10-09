@@ -1,0 +1,20 @@
+name: UNIX
+
+encoder:
+  _target_: source.encoder.UniXEncoder.UniXEncoder
+  architecture: microsoft/unixcoder-base
+
+hidden_size: 768
+
+tokenizer:
+  architecture: ${model.encoder.architecture}
+
+
+lr: 2e-5
+
+
+loss:
+  _target_: source.loss.CrossEntropyLoss.CrossEntropyLoss
+  params:
+    name: CrossEntropyLoss
+    batch_size: ${data.batch_size}

@@ -1,4 +1,4 @@
-name: GRU_CoTNG
+name: GRU
 
 desc_encoder:
   _target_: source.encoder.GRUEncoder.GRUEncoder

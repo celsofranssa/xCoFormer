@@ -130,8 +130,8 @@ class EvalHelper:
             ranking = self.get_ranking(k=thresholds[-1], fold=fold)
 
             for k in thresholds:
-                stats.at[fold, f"MRR@{k}"] = self.mrr_at_k(ranking.values(), k, len(ranking))
-                stats.at[fold, f"RCL@{k}"] = self.recall_at_k(ranking.values(), k, len(ranking))
+                stats.at[fold, f"MRR@{k}"] = round(self.mrr_at_k(ranking.values(), k, len(ranking)), 3)
+                stats.at[fold, f"RCL@{k}"] = round(self.recall_at_k(ranking.values(), k, len(ranking)), 3)
 
             rankings[fold] = ranking
 

@@ -31,7 +31,7 @@ class PredictHelper:
             self.params.prediction.fold = fold
             # trainer
             trainer = pl.Trainer(
-                gpus=self.params.trainer.gpus,
+                accelerator=self.params.trainer.accelerator,
                 callbacks=[PredictionWriter(self.params.prediction)]
             )
 

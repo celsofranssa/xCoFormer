@@ -2,12 +2,8 @@ import json
 
 import torch
 from omegaconf import OmegaConf
-import pytorch_lightning as pl
-from pytorch_lightning import loggers
-from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from transformers import AutoTokenizer
 
-from source.DataModule.BiEncoderDataModule import BiEncoderDataModule
 from source.model.BiEncoderModel import BiEncoderModel
 
 

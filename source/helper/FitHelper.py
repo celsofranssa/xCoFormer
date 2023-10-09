@@ -20,9 +20,7 @@ class FitHelper:
             trainer = pl.Trainer(
                 fast_dev_run=self.params.trainer.fast_dev_run,
                 max_epochs=self.params.trainer.max_epochs,
-                precision=self.params.trainer.precision,
-                gpus=self.params.trainer.gpus,
-                progress_bar_refresh_rate=self.params.trainer.progress_bar_refresh_rate,
+                accelerator=self.params.trainer.accelerator,
                 logger=self.get_logger(self.params, fold),
                 callbacks=[
                     self.get_model_checkpoint_callback(self.params, fold),  # checkpoint_callback

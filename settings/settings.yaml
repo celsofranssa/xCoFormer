@@ -5,13 +5,12 @@ defaults:
 tasks: [ "fit" ]
 
 trainer:
-  max_epochs: 16
-  gpus: 1
-  patience: 7
+  max_epochs: 8
+  accelerator: gpu
+  patience: 3
   min_delta: 0.03
-  precision: 16
   fast_dev_run: False
-  progress_bar_refresh_rate: 1
+  gradient_clip_val: 1.0
 
 
 
@@ -39,6 +38,16 @@ tsne:
 
 stat:
   dir: resource/stat/
+
+eval:
+  metrics: ["mrr","recall"]
+  thresholds: [1,5,10]
+  num_nearest_neighbors: 10
+  index:
+    M: 128
+    indexThreadQty: ${data.num_workers}
+    efConstruction: 256
+    post: 2
 
 
 

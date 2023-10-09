@@ -1,12 +1,12 @@
-name: BERT
+name: RoBERTa
 
 desc_encoder:
-  _target_: source.encoder.BERTEncoder.BERTEncoder
-  architecture: bert-base-uncased
+  _target_: source.encoder.RoBERTaEncoder.RoBERTaEncoder
+  architecture: roberta-base
 
 code_encoder:
-  _target_: source.encoder.BERTEncoder.BERTEncoder
-  architecture: bert-base-uncased
+  _target_: source.encoder.RoBERTaEncoder.RoBERTaEncoder
+  architecture: roberta-base
 
 hidden_size: 768
 
