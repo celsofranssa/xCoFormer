@@ -24,7 +24,7 @@ class BiEncoderDataModule(pl.LightningDataModule):
 
     def setup(self, stage=None):
 
-        if stage == 'fit':
+        if stage == 'fit' or stage == 'validate':
             self.train_dataset = BiEncoderDataset(
                 samples=self.samples,
                 ids_path=self.params.dir + f"fold_{self.fold}/train.pkl",
