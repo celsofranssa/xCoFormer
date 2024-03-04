@@ -1,6 +1,6 @@
 from omegaconf import OmegaConf
 import pytorch_lightning as pl
-from pytorch_lightning import loggers
+from pytorch_lightning import loggers, seed_everything
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from transformers import AutoTokenizer
 
@@ -14,6 +14,7 @@ class FitHelper:
         self.params = params
 
     def perform_fit(self):
+        seed_everything(707, workers=True)
         for fold_idx in self.params.data.folds:
             print(
                 f"Fitting {self.params.model.name} over {self.params.data.name} (fold {fold_idx}) with fowling self.params\n"
