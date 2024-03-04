@@ -1,30 +1,47 @@
+import pickle
+
 import torch
+from ranx import Qrels, Run, evaluate
 from torchmetrics import Metric
 
 
 class MRRMetric(Metric):
-    def __init__(self):
-        super().__init__()
-        self.add_state("mrrs", default=[])
+    def __init__(self, params):
+        super(MRRMetric, self).__init__(compute_on_cpu=True)
+        self.params = params
+        self.relevance_map = self._load_relevance_map()
+        self.ranking = {}
 
-    def similarities(self, x1, x2):
-        """
-        Calculates the cosine similarity matrix for every pair (i, j),
-        where i is an embedding from x1 and j is another embedding from x2.
+    def _load_relevance_map(self):
+        with open(f"{self.params.relevance_map.dir}relevance_map.pkl", "rb") as relevances_file:
+            data = pickle.load(relevances_file)
+        relevance_map = {}
+        for text_idx, labels_ids in data.items():
+            d = {}
+            for label_idx in labels_ids:
+                d[f"code_{label_idx}"] = 1.0
+            relevance_map[f"desc_{text_idx}"] = d
+        return relevance_map
 
-        :param x1: a tensors with shape [batch_size, hidden_size].
-        :param x2: a tensors with shape [batch_size, hidden_size].
-        :return: the cosine similarity matrix with shape [batch_size, batch_size].
-        """
-        x1 = x1 / torch.norm(x1, dim=1, p=2, keepdim=True)
-        x2 = x2 / torch.norm(x2, dim=1, p=2, keepdim=True)
-        return torch.matmul(x1, x2.t())
+    def update(self, descs_ids, descs_rprs, codes_ids, codes_rprs):
 
-    def update(self, r1, r2):
-        distances = 1 - self.similarities(r1, r2)
-        correct_elements = torch.unsqueeze(torch.diag(distances), dim=-1)
-        batch_ranks = torch.sum(distances < correct_elements, dim=-1) + 1.0
-        self.mrrs.append(torch.mean(1.0 / batch_ranks))
+        scores = torch.einsum("ab,cb->ac", descs_rprs, codes_rprs) * self.params.scale
+
+        for i, text_idx in enumerate(descs_ids.tolist()):
+            for j, label_idx in enumerate(codes_ids.tolist()):
+                if f"desc_{text_idx}" not in self.ranking:
+                    self.ranking[f"desc_{text_idx}"] = {}
+                self.ranking[f"desc_{text_idx}"][f"code_{label_idx}"] = scores[i][j].item() + self.ranking[
+                    f"desc_{text_idx}"].get(
+                    f"code_{label_idx}", 0)
 
     def compute(self):
-        return torch.mean(torch.tensor(self.mrrs))
+        m = evaluate(
+            Qrels({key: value for key, value in self.relevance_map.items() if key in self.ranking.keys()}),
+            Run(self.ranking),
+            ["mrr@1", "mrr@5", "mrr@10"]
+        )
+        return m
+
+    def reset(self) -> None:
+        self.ranking = {}

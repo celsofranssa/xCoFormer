@@ -1,0 +1,52 @@
+name: CLM
+
+desc_encoder:
+  _target_: source.encoder.CLMEncoder.CLMEncoder
+  architecture: microsoft/unixcoder-base
+  output_attentions: False
+  pooling:
+    _target_: source.pooling.NoPooling.NoPooling
+
+code_encoder:
+  _target_: source.encoder.CLMEncoder.CLMEncoder
+  architecture: microsoft/unixcoder-base
+  output_attentions: False
+  pooling:
+    _target_: source.pooling.NoPooling.NoPooling
+
+hidden_size: 768
+
+desc_tokenizer:
+  architecture: ${model.desc_encoder.architecture}
+
+code_tokenizer:
+  architecture: ${model.code_encoder.architecture}
+
+lr: 2e-5
+base_lr: 1e-7
+max_lr: 1e-5
+desc_lr: 2e-5
+code_lr: 2e-5
+weight_decay: 1e-2
+
+tag_training: False
+desc_frequency_opt: 1
+code_frequency_opt: 1
+
+loss:
+  _target_: source.loss.NPairLoss.NPairLoss
+  params:
+    name: NPairLoss
+    miner:
+      relevance_map:
+        dir: ${data.dir}
+    criterion:
+      temperature: 0.07
+    scale: 20
+
+metric:
+  relevance_map:
+    dir: ${data.dir}
+  num_nearest_neighbors: 10
+  index: ${eval.index}
+  scale: 20

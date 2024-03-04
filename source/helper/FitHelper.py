@@ -14,16 +14,19 @@ class FitHelper:
         self.params = params
 
     def perform_fit(self):
-        for fold in self.params.data.folds:
+        for fold_idx in self.params.data.folds:
+            print(
+                f"Fitting {self.params.model.name} over {self.params.data.name} (fold {fold_idx}) with fowling self.params\n"
+                f"{OmegaConf.to_yaml(self.params)}\n")
 
             # Initialize a trainer
             trainer = pl.Trainer(
-                fast_dev_run=self.params.trainer.fast_dev_run,
                 max_epochs=self.params.trainer.max_epochs,
                 accelerator=self.params.trainer.accelerator,
-                logger=self.get_logger(self.params, fold),
+                devices=self.params.trainer.devices,
+                logger=self.get_logger(fold_idx),
                 callbacks=[
-                    self.get_model_checkpoint_callback(self.params, fold),  # checkpoint_callback
+                    self.get_model_checkpoint_callback(self.params, fold_idx),  # checkpoint_callback
                     self.get_early_stopping_callback(self.params),  # early_stopping_callback
                 ]
             )
@@ -33,24 +36,33 @@ class FitHelper:
                 self.params.data,
                 self.get_tokenizer(self.params.model.desc_tokenizer),
                 self.get_tokenizer(self.params.model.code_tokenizer),
-                fold=fold)
+                fold=fold_idx)
 
             # model
             model = BiEncoderModel(self.params.model)
 
-            # Train the ⚡ model
-            print(
-                f"Fitting {self.params.model.name} over {self.params.data.name} (fold {fold}) with fowling self.params\n"
-                f"{OmegaConf.to_yaml(self.params)}\n")
-            trainer.fit(
+            trainer.validate(
                 model=model,
                 datamodule=datamodule
             )
 
-    def get_logger(self, params, fold):
-        return loggers.TensorBoardLogger(
-            save_dir=params.log.dir,
-            name=f"{params.model.name}_{params.data.name}_{fold}_exp"
+            # Train the ⚡ model
+            trainer.fit(
+                model=model,
+                datamodule=datamodule
+            )
+    #
+    # def get_logger(self, params, fold):
+    #     return loggers.TensorBoardLogger(
+    #         save_dir=params.log.dir,
+    #         name=f"{params.model.name}_{params.data.name}_{fold}_exp"
+    #     )
+
+    def get_logger(self, fold_idx):
+        return loggers.WandbLogger(
+            project=self.params.log.project,
+            save_dir=self.params.log.dir,
+            name=f"{self.params.model.name}_{self.params.data.name}_{fold_idx}_exp"
         )
 
     def get_model_checkpoint_callback(self, params, fold):

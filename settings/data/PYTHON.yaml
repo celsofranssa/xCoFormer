@@ -1,5 +1,5 @@
 name: PYTHON
-dir: resource/dataset/python/
+dir: resource/dataset/PYTHON/
 
 folds: [0,1,2,3,4]
 

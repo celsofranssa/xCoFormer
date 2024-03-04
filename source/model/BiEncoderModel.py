@@ -21,7 +21,7 @@ class BiEncoderModel(LightningModule):
         self.loss = instantiate(hparams.loss)
 
         # metric
-        self.mrr = MRRMetric()
+        self.mrr = MRRMetric(hparams.metric)
 
     def forward(self, desc, code):
         desc_repr = self.desc_encoder(desc)
@@ -39,10 +39,10 @@ class BiEncoderModel(LightningModule):
         return train_loss
 
     def validation_step(self, batch, batch_idx):
-        desc, code = batch["desc"], batch["code"]
-        desc_repr, code_repr = self(desc, code)
-        self.log("val_MRR", self.mrr(desc_repr, code_repr), prog_bar=True)
-        self.log("val_LOSS", self.loss(desc_repr, code_repr), prog_bar=True)
+        desc_repr, code_repr = self(batch["desc"], batch["code"])
+        self.log_dict(self.mrr(batch["desc_idx"], desc_repr, batch["code_idx"], code_repr), prog_bar=True)
+        self.log("val_MRR", self.mrr(batch["desc_idx"], desc_repr, batch["code_idx"], code_repr), prog_bar=True)
+
 
     def on_validation_epoch_end(self):
         self.mrr.compute()
@@ -72,7 +72,7 @@ class BiEncoderModel(LightningModule):
         return self.desc_encoder
 
     def configure_optimizers(self):
-        if self.hparams.co_training:
+        if self.hparams.tag_training:
             return self._configure_ctg_optimizers()
         else:
             return self._configure_std_optimizers()

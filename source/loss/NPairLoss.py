@@ -13,7 +13,6 @@ class NPairLoss(nn.Module):
         self.params = params
         self.criterion = nn.CrossEntropyLoss()
 
-
     def forward(self, desc_repr, code_repr):
         scores = torch.einsum("ab,cb->ac", desc_repr, code_repr) * self.params.scale
         labels = torch.tensor(range(len(scores)), dtype=torch.long,

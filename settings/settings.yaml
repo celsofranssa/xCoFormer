@@ -7,14 +7,15 @@ tasks: [ "fit" ]
 trainer:
   max_epochs: 8
   accelerator: gpu
+  devices: auto
   patience: 3
   min_delta: 0.03
   fast_dev_run: False
   gradient_clip_val: 1.0
 
 
-
 log:
+  project: NEUROCOMP
   dir: resource/log/
 
 model_checkpoint:

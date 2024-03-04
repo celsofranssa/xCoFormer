@@ -4,7 +4,7 @@ import torch
 from pytorch_lightning.core.lightning import LightningModule
 from hydra.utils import instantiate
 
-from source.metric.MRRMetric import MRRMetric
+from source.metric.MRRMetric_OLD import MRRMetric
 
 
 class SiEncoderModel(LightningModule):
