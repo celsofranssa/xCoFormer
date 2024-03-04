@@ -67,7 +67,7 @@ class FitHelper:
 
     def get_model_checkpoint_callback(self, params, fold):
         return ModelCheckpoint(
-            monitor="val_MRR",
+            monitor="mrr@10",
             dirpath=params.model_checkpoint.dir,
             filename=f"{params.model.name}_{params.data.name}_{fold}",
             save_top_k=1,
@@ -77,7 +77,7 @@ class FitHelper:
 
     def get_early_stopping_callback(self, params):
         return EarlyStopping(
-            monitor='val_MRR',
+            monitor='mrr@10',
             patience=params.trainer.patience,
             min_delta=params.trainer.min_delta,
             mode='max'
