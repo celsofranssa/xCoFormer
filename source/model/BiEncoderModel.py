@@ -37,15 +37,21 @@ class BiEncoderModel(LightningModule):
         self.log('train_LOSS', train_loss)
 
         return train_loss
+    #
+    # def validation_step(self, batch, batch_idx):
+    #     desc_repr, code_repr = self(batch["desc"], batch["code"])
+    #     self.log_dict(self.mrr(batch["desc_idx"], desc_repr, batch["code_idx"], code_repr), prog_bar=True)
+    #
+    # def on_validation_epoch_end(self):
+    #     self.mrr.compute()
 
     def validation_step(self, batch, batch_idx):
         desc_repr, code_repr = self(batch["desc"], batch["code"])
-        self.log_dict(self.mrr(batch["desc_idx"], desc_repr, batch["code_idx"], code_repr), prog_bar=True)
-        self.log("val_MRR", self.mrr(batch["desc_idx"], desc_repr, batch["code_idx"], code_repr), prog_bar=True)
-
+        self.mrr(batch["desc_idx"], desc_repr, batch["code_idx"], code_repr)
 
     def on_validation_epoch_end(self):
-        self.mrr.compute()
+        self.log_dict(self.mrr.compute(), prog_bar=True)
+        self.mrr.reset()
 
     def predict_step(self, batch, batch_idx, dataloader_idx=None):
         idx, desc, code = batch["idx"], batch["desc"], batch["code"]
